@@ -14,6 +14,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "app/(tabs)/index.js"
-  ],
-  "extends": "expo/tsconfig.base"
+ 
+  "extends": "expo/tsconfig.base" ],
 }
