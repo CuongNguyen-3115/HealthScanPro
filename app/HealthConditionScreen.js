@@ -1,6 +1,6 @@
 // HealthConditionScreen.js
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProgressBar from '../app/ProgressBar';
@@ -11,6 +11,7 @@ const conditions = [
   { title: 'Bệnh tim mạch', description: 'Các vấn đề về tim mạch' },
   { title: 'Thừa cân/Béo phì', description: 'BMI > 25' },
   { title: 'Thiếu cân', description: 'BMI < 18.5' },
+  { title: 'Bệnh phổi mãn tính', description: 'Bệnh phổi tắc nghe'},
 ];
 
 export default function HealthConditionScreen() {
