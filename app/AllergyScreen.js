@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ProgressBar from '../app/ProgressBar';
+import ProgressBar from './ProgressBar';
 
 const commonAllergies = ['Gluten', 'Lactose', 'Đậu phộng', 'Tôm cua', 'Trứng', 'Đậu nành', 'Hạt phỉ', 'Cá', 'Dâu tây', 'Chocolate'];
 
