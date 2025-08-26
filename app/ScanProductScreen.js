@@ -1,4 +1,6 @@
 // app/ScanProductScreen.js
+import { Camera, CameraView } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -25,9 +27,61 @@ export default function ScanProductScreen() {
   const [activeTab, setActiveTab] = useState(TAB_KEYS.CAMERA);
   const [searchText, setSearchText] = useState('');
   const [photoUri, setPhotoUri] = useState(null);
+  const [uploadUri, setUploadUri] = useState(null);
+const pickFromLibrary = async () => {
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: false,
+    quality: 1,
+  });
+
+  if (!result.canceled && result.assets?.length) {
+    const uri = result.assets[0].uri;
+    setUploadUri(uri);
+
+    // Nếu muốn tự điều hướng ngay sau khi chọn ảnh:
+    // router.push({ pathname: '/ProductAnalysisScreen', params: { photoUri: uri } });
+  }
+};
+// ==== Barcode states & helpers ====
+const [barcodePermission, setBarcodePermission] = useState(null);
+const [isScanning, setIsScanning] = useState(false);
+const [lastBarcode, setLastBarcode] = useState(null);
+
+const startScan = async () => {
+  // xin quyền camera bằng expo-camera
+  const { status } = await Camera.requestCameraPermissionsAsync();
+  if (status !== 'granted') {
+    alert('Chưa có quyền quét mã vạch');
+    setBarcodePermission(false);
+    return;
+  }
+  setBarcodePermission(true);
+  setIsScanning(true);
+  setLastBarcode(null);
+};
+
+
+const stopScan = () => setIsScanning(false);
+
+const onBarCodeScanned = ({ type, data }) => {
+  // tắt quét để tránh gọi liên tục
+  setIsScanning(false);
+  setLastBarcode(data);
+
+  // Nếu muốn điều hướng ngay lập tức theo barcode:
+  // router.push({ pathname: '/ProductAnalysisScreen', params: { barcode: data } });
+};
 
   // chụp ảnh xong thì navigate
   const handleTakePhoto = async () => {
+
     const granted = await CameraScannerService.requestCameraPermission();
     if (!granted) {
       return alert('Bạn cần cấp quyền camera để chụp ảnh!');
@@ -70,39 +124,104 @@ export default function ScanProductScreen() {
           </>
         );
 
-      case TAB_KEYS.UPLOAD:
-        return (
-          <>
-            <MaterialIcons name="file-upload" size={60} color="#198754" style={styles.icon} />
-            <Text style={styles.contentTitle}>Tải Ảnh Lên</Text>
-            <Text style={styles.contentSubtitle}>
-              Chọn ảnh nhãn thành phần từ thư viện
-            </Text>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => alert('Chức năng Tải lên đang phát triển')}>
-              <MaterialIcons name="file-upload" size={20} color="#fff" />
-              <Text style={styles.primaryBtnText}>Chọn Ảnh</Text>
-            </TouchableOpacity>
-          </>
-        );
+      
+        case TAB_KEYS.UPLOAD:
+  return (
+    <>
+      {uploadUri ? (
+        <Image source={{ uri: uploadUri }} style={styles.previewImage} resizeMode="cover" />
+      ) : (
+        <MaterialIcons name="file-upload" size={60} color="#198754" style={styles.icon} />
+      )}
 
-      case TAB_KEYS.BARCODE:
-        return (
-          <>
-            <FontAwesome name="barcode" size={60} color="#198754" style={styles.icon} />
-            <Text style={styles.contentTitle}>Quét Mã Vạch</Text>
-            <Text style={styles.contentSubtitle}>
-              Hướng camera vào mã vạch sản phẩm
+      <Text style={styles.contentTitle}>
+        {uploadUri ? 'Xem trước ảnh đã chọn' : 'Tải Ảnh Lên'}
+      </Text>
+      <Text style={styles.contentSubtitle}>
+        {uploadUri ? 'Ảnh đã chọn từ thư viện' : 'Chọn ảnh nhãn thành phần từ thư viện'}
+      </Text>
+
+      <TouchableOpacity style={styles.primaryBtn} onPress={pickFromLibrary}>
+        <MaterialIcons name="file-upload" size={20} color="#fff" />
+        <Text style={styles.primaryBtnText}>{uploadUri ? 'Chọn lại ảnh' : 'Chọn Ảnh'}</Text>
+      </TouchableOpacity>
+
+      {uploadUri && (
+        <TouchableOpacity
+          style={[styles.primaryBtn, { marginTop: 12 }]}
+          onPress={() =>
+            router.push({ pathname: '/ProductAnalysisScreen', params: { photoUri: uploadUri } })
+          }
+        >
+          <MaterialIcons name="analytics" size={20} color="#fff" />
+          <Text style={styles.primaryBtnText}>Phân tích ảnh này</Text>
+        </TouchableOpacity>
+      )}
+    </>
+  );
+
+
+     case TAB_KEYS.BARCODE:
+  return (
+    <>
+      {isScanning ? (
+        <View style={styles.scannerWrap}>
+    <CameraView
+      style={StyleSheet.absoluteFillObject}
+      facing="back"
+      barcodeScannerSettings={{
+        barcodeTypes: [
+          'qr', 'ean8', 'ean13', 'code39', 'code93', 'code128',
+          'upc_a', 'upc_e', 'pdf417', 'aztec', 'datamatrix', 'itf14', 'codabar'
+        ],
+      }}
+      onBarcodeScanned={({ data, type }) => onBarCodeScanned({ data, type })}
+    />
+    {/* khung ngắm đơn giản */}
+    <View style={styles.scanFrame} />
+    <TouchableOpacity style={styles.overlayBtn} onPress={stopScan}>
+      <Text style={styles.overlayBtnText}>Hủy</Text>
+    </TouchableOpacity>
+  </View>
+      ) : (
+        <>
+          <FontAwesome name="barcode" size={60} color="#198754" style={styles.icon} />
+          <Text style={styles.contentTitle}>Quét Mã Vạch</Text>
+          <Text style={styles.contentSubtitle}>
+            Hướng camera vào mã vạch sản phẩm
+          </Text>
+
+          {lastBarcode ? (
+            <>
+              <Text style={{ color: '#0a0a0a', marginBottom: 10 }}>
+                Đã phát hiện: <Text style={{ fontWeight: '700' }}>{lastBarcode}</Text>
+              </Text>
+              <TouchableOpacity
+                style={[styles.primaryBtn, { marginBottom: 10 }]}
+                onPress={() =>
+                  router.push({
+                    pathname: '/ProductAnalysisScreen',
+                    params: { barcode: lastBarcode },
+                  })
+                }
+              >
+                <MaterialIcons name="analytics" size={20} color="#fff" />
+                <Text style={styles.primaryBtnText}>Phân tích theo mã này</Text>
+              </TouchableOpacity>
+            </>
+          ) : null}
+
+          <TouchableOpacity style={styles.primaryBtn} onPress={startScan}>
+            <FontAwesome name="barcode" size={20} color="#fff" />
+            <Text style={styles.primaryBtnText}>
+              {barcodePermission === false ? 'Xin quyền & bắt đầu quét' : 'Bắt đầu quét'}
             </Text>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => alert('Chức năng Quét mã vạch đang phát triển')}>
-              <FontAwesome name="barcode" size={20} color="#fff" />
-              <Text style={styles.primaryBtnText}>Quét Mã Vạch</Text>
-            </TouchableOpacity>
-          </>
-        );
+          </TouchableOpacity>
+        </>
+      )}
+    </>
+  );
+
 
       case TAB_KEYS.SEARCH:
         return (
@@ -196,133 +315,34 @@ const styles = StyleSheet.create({
   tipsBox:       { marginTop:20, backgroundColor:'#fff', padding:16, borderRadius:10, elevation:2 },
   tipsTitle:     { fontWeight:'700', marginBottom:8, color:'#444' },
   tip:           { fontSize:13, color:'#333', marginBottom:4 },
+  scannerWrap: {
+  width: '100%',
+  height: 320,
+  borderRadius: 12,
+  overflow: 'hidden',
+  marginBottom: 12,
+  backgroundColor: '#000',
+},
+scanFrame: {
+  position: 'absolute',
+  left: '10%',
+  right: '10%',
+  top: '20%',
+  bottom: '20%',
+  borderWidth: 2,
+  borderColor: '#00FF88',
+  borderRadius: 12,
+},
+overlayBtn: {
+  position: 'absolute',
+  bottom: 12,
+  alignSelf: 'center',
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+},
+overlayBtnText: { color: '#fff', fontWeight: '700' },
+
 });
 
-// export default function BarcodeTab() {
-//   const [hasPermission, setHasPermission] = useState(false);
-
-//   useEffect(() => {
-//     (async () => {
-//       const ok = await BarcodeScannerService.requestPermissions();
-//       setHasPermission(ok);
-//       if (!ok) Alert.alert('Chưa có quyền quét mã vạch');
-//     })();
-//   }, []);
-
-//   const onScanned = ({ type, data }) => {
-//     const result = BarcodeScannerService.handleBarCodeScanned({ type, data });
-//     // ví dụ: navigate tới trang chi tiết sản phẩm theo result.data
-//   };
-
-//   if (!hasPermission) return <Text>Đang xin quyền...</Text>;
-
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <BarCodeScanner
-//         onBarCodeScanned={onScanned}
-//         style={{ flex: 1 }}
-//       />
-//     </View>
-//   );
-// }
-
-// export default function CameraTab() {
-//   const camRef = useRef(null);
-//   const [hasPermission, setHasPermission] = useState(false);
-
-//   useEffect(() => {
-//     (async () => {
-//       const ok = await CameraScannerService.requestPermissions();
-//       setHasPermission(ok);
-//       if (!ok) Alert.alert('Chưa có quyền truy cập camera');
-//     })();
-//   }, []);
-
-//   const snap = async () => {
-//     if (!hasPermission) return;
-//     const uri = await CameraScannerService.takePicture(camRef.current);
-//     console.log('Ảnh chụp:', uri);
-//     // TODO: gửi uri lên service xử lý OCR / Ingredient extraction v.v.
-//   };
-
-//   if (!hasPermission) return <Text>Đang xin quyền camera...</Text>;
-
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <Camera ref={camRef} style={{ flex: 1 }} />
-//       <TouchableOpacity onPress={snap}>
-//         <Text>Chụp Ảnh</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// export default function ScanProductScreen() {
-//   const [activeTab, setActiveTab] = useState(TAB_KEYS.CAMERA);
-//   const [selectedUri, setSelectedUri] = useState(null);      // ✨ lưu URI ảnh chọn
-//   // ...
-
-//   // Hàm gọi ImageService để xin quyền, pick ảnh và set vào state
-//   const pickFromLibrary = async () => {
-//     const ok = await ImageService.requestPermissions();
-//     if (!ok) {
-//       return alert('Chưa có quyền truy cập ảnh!');
-//     }
-//     const uri = await ImageService.pickFromLibrary();
-//     if (uri) {
-//       setSelectedUri(uri);
-//       // nếu bạn muốn tự động upload:
-//       // const res = await ImageService.uploadImage(uri, 'https://your.api/upload');
-//       // console.log(res);
-//     }
-//   };
-
-//   const renderContent = () => {
-//     switch (activeTab) {
-//       // ... các case khác
-
-//       case TAB_KEYS.UPLOAD:
-//         return (
-//           <>
-//             {/* nếu đã chọn ảnh thì show preview, ngược lại show icon */}
-//             {selectedUri ? (
-//               <Image
-//                 source={{ uri: selectedUri }}
-//                 style={{ width: 200, height: 200, borderRadius: 10, marginBottom: 12 }}
-//                 resizeMode="cover"
-//               />
-//             ) : (
-//               <MaterialIcons
-//                 name="file-upload"
-//                 size={60}
-//                 color="#198754"
-//                 style={styles.icon}
-//               />
-//             )}
-
-//             <Text style={styles.contentTitle}>
-//               {selectedUri ? 'Xem trước ảnh' : 'Tải Ảnh Lên'}
-//             </Text>
-//             <Text style={styles.contentSubtitle}>
-//               {selectedUri
-//                 ? 'Ảnh đã chọn từ thư viện'
-//                 : 'Chọn ảnh nhãn thành phần từ thư viện'}
-//             </Text>
-
-//             <TouchableOpacity
-//               style={styles.primaryBtn}
-//               onPress={pickFromLibrary}
-//             >
-//               <MaterialIcons name="file-upload" size={20} color="#fff" />
-//               <Text style={styles.primaryBtnText}>
-//                 {selectedUri ? 'Chọn lại ảnh' : 'Chọn Ảnh'}
-//               </Text>
-//             </TouchableOpacity>
-//           </>
-//         );
-//     // ...
-//     }
-//   };
-
-//   // phần return() và các style giữ nguyên
-// }
