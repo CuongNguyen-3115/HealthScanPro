@@ -1,11 +1,11 @@
 // app/HealthConditionScreen.js
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProgressBar from '../app/ProgressBar';
-
+/** ====== Danh mục hiển thị trong UI ====== */
 const BASE_CONDITIONS = [
   { title: 'Tiểu đường', description: 'Type 1/Type 2' },
   { title: 'Huyết áp cao', description: 'Tăng huyết áp' },
@@ -27,7 +27,37 @@ const BASE_CONDITIONS = [
   { title: 'Mang thai/Cho con bú', description: 'Thời kỳ đặc biệt' },
   { title: 'Thừa cân/Béo phì', description: 'BMI > 25' },
   { title: 'Thiếu cân', description: 'BMI < 18.5' },
+  { title: 'Bệnh phổi mãn tính', description: 'Bệnh phổi mạn' },
 ];
+/** ====== Map nhãn → code ổn định để lưu file ====== */
+const CONDITION_CODES = {
+  'Tiểu đường': 'diabetes',
+  'Huyết áp cao': 'hypertension',
+  'Bệnh tim mạch': 'cardiovascular',
+  'Rối loạn mỡ máu': 'lipid_disorder',
+  'Bệnh thận mạn': 'ckd',
+  'Bệnh gan': 'liver_disease',
+  'Gút': 'gout',
+  'Rối loạn tuyến giáp': 'thyroid_disorder',
+  'Celiac/nhạy gluten': 'celiac',
+  'Không dung nạp Lactose': 'lactose_intolerance',
+  'Hội chứng ruột kích thích (IBS)': 'ibs',
+  'GERD/Trào ngược dạ dày': 'gerd',
+  'Hen phế quản': 'asthma',
+  'COPD': 'copd',
+  'Bệnh phổi mãn tính': 'copd',
+  'Thiếu máu/Thiếu sắt': 'anemia',
+  'Loãng xương': 'osteoporosis',
+  'PCOS': 'pcos',
+  'Mang thai/Cho con bú': 'pregnancy',
+  'Thừa cân/Béo phì': 'obesity',
+  'Thiếu cân': 'underweight',
+};
+
+/** Map ngược code → nhãn để prefill về UI */
+const CODE_TO_TITLE = Object.fromEntries(
+  Object.entries(CONDITION_CODES).map(([label, code]) => [code, label])
+);
 
 const normalize = (s = '') =>
   s.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
@@ -217,6 +247,7 @@ export default function HealthConditionScreen() {
       {/* Footer NEXT */}
       <SafeAreaView edges={['bottom']} style={styles.footer}>
         <TouchableOpacity style={styles.nextButton} onPress={() => router.push('AllergyScreen')}>
+
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
           <MaterialIcons name="arrow-forward" size={20} color="white" />
         </TouchableOpacity>
@@ -325,7 +356,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   otherToggleText: {
-    fontSize: 12,            // nhỏ hơn
+    fontSize: 12,
     color: '#17863d',
     fontWeight: '700',
   },

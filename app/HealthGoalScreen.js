@@ -1,7 +1,8 @@
 // app/HealthGoalScreen.js
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,20 +12,65 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProgressBar from '../app/ProgressBar'; // giữ nguyên path bạn đang dùng
+import ProfileService from '../services/ProfileService';
+import { GOAL_CODES } from '../services/profileCodes';
+
+// Map ngược: code -> nhãn hiển thị
+const CODE_TO_GOAL_LABEL = useMemoCreateInverse(GOAL_CODES);
+
+// Danh sách mục tiêu theo UI của bạn
+const GOAL_LABELS = [
+  'Giảm cân', 'Duy trì cân nặng', 'Cải thiện tim mạch', 'Tăng năng lượng',
+  'Giảm stress', 'Tăng cân', 'Tăng cơ bắp', 'Kiểm soát đường huyết',
+  'Cải thiện tiêu hóa', 'Ngủ ngon hơn',
+];
 
 export default function HealthGoalScreen() {
-  const [selectedGoals, setSelectedGoals] = useState([]);
+  const [selectedGoals, setSelectedGoals] = useState([]); // Lưu NHÃN để hiển thị
   const [note, setNote] = useState('');
   const TOTAL_STEPS = 4;
   const CURRENT_STEP = 4;
 
-  const toggleGoal = (goal) => {
+  // Prefill từ bản nháp
+  useEffect(() => {
+    (async () => {
+      const d = await ProfileService.loadDraft();
+      // goals trong nháp có thể là code -> map ra label; nếu không map được thì giữ nguyên chuỗi
+      const labels = Array.isArray(d.goals) ? d.goals.map((g) => CODE_TO_GOAL_LABEL[g] || g) : [];
+      const dedup = Array.from(new Set(labels.filter(Boolean)));
+      setSelectedGoals(dedup);
+      if (d.notes) setNote(String(d.notes));
+    })();
+  }, []);
+
+  const toggleGoal = (goalLabel) => {
     setSelectedGoals(prev =>
-      prev.includes(goal)
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
+      prev.includes(goalLabel)
+        ? prev.filter(g => g !== goalLabel)
+        : [...prev, goalLabel]
     );
   };
+
+  const onFinish = async () => {
+    try {
+      // Map nhãn -> code (nếu có); nếu không có trong bảng, giữ nguyên chuỗi người dùng chọn
+      const goalCodesOrText = selectedGoals.map((label) => GOAL_CODES[label] || label);
+
+      await ProfileService.saveDraft({ goals: goalCodesOrText, notes: note });
+      await ProfileService.persistToServer(); // -> lưu profiles/{id}.json trên server
+
+      // Điều hướng sang màn xem hồ sơ
+      router.replace('/HealthProfileViewScreen');
+    } catch (e) {
+      Alert.alert('Lỗi lưu hồ sơ', String(e?.message || e));
+    }
+  };
+
+  // Gợi ý có trạng thái (đã chọn/chưa)
+  const goalItems = useMemo(
+    () => GOAL_LABELS.map(l => ({ label: l, active: selectedGoals.includes(l) })),
+    [selectedGoals]
+  );
 
   return (
     <View style={styles.wrapper}>
@@ -47,26 +93,14 @@ export default function HealthGoalScreen() {
       <ScrollView contentContainerStyle={styles.goalsContainer}>
         <Text style={styles.sectionTitle}>Chọn mục tiêu (có thể chọn nhiều)</Text>
         <View style={styles.goalGrid}>
-          {[
-            'Giảm cân','Duy trì cân nặng','Cải thiện tim mạch','Tăng năng lượng',
-            'Giảm stress','Tăng cân','Tăng cơ bắp','Kiểm soát đường huyết',
-            'Cải thiện tiêu hóa','Ngủ ngon hơn',
-          ].map((goal, i) => (
+          {goalItems.map(({ label, active }) => (
             <TouchableOpacity
-              key={i}
-              style={[
-                styles.goalButton,
-                selectedGoals.includes(goal) && styles.goalButtonSelected,
-              ]}
-              onPress={() => toggleGoal(goal)}
+              key={label}
+              style={[styles.goalButton, active && styles.goalButtonSelected]}
+              onPress={() => toggleGoal(label)}
             >
-              <Text
-                style={[
-                  styles.goalText,
-                  selectedGoals.includes(goal) && styles.goalTextSelected,
-                ]}
-              >
-                {goal}
+              <Text style={[styles.goalText, active && styles.goalTextSelected]}>
+                {label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -80,24 +114,23 @@ export default function HealthGoalScreen() {
           onChangeText={setNote}
           multiline
           numberOfLines={4}
+          placeholderTextColor="#666"
         />
       </ScrollView>
 
       {/* Hoàn thành */}
-      <TouchableOpacity
-        style={styles.finishButton}
-        onPress={() => router.push('ScanProductScreen')}
-      >
+      <TouchableOpacity style={styles.finishButton} onPress={onFinish}>
         <Text style={styles.finishText}>Hoàn thành</Text>
-        <Ionicons
-          name="arrow-forward"
-          size={20}
-          color="white"
-          style={{ marginLeft: 8 }}
-        />
+        <Ionicons name="arrow-forward" size={20} color="white" style={{ marginLeft: 8 }} />
       </TouchableOpacity>
     </View>
   );
+}
+
+/** Helper tạo map ngược (code -> label) ngoài component tree */
+function useMemoCreateInverse(obj) {
+  // không phụ thuộc lifecycle của component, nhưng dùng để giữ code gọn
+  return useMemo(() => Object.fromEntries(Object.entries(obj).map(([label, code]) => [code, label])), []);
 }
 
 const styles = StyleSheet.create({
@@ -181,10 +214,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
     marginTop: 10,
+    color: '#000',
   },
   finishButton: {
     position: 'absolute',
-    bottom: 180,
+    bottom: 10,
     left: 16,
     right: 16,
     backgroundColor: 'green',

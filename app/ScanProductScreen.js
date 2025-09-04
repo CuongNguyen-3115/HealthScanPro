@@ -343,5 +343,11 @@ overlayBtn: {
   borderRadius: 8,
 },
 overlayBtnText: { color: '#fff', fontWeight: '700' },
+<<<<<<< HEAD
 
 });
+=======
+
+});
+
+>>>>>>> CuongShin
