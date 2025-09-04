@@ -1,11 +1,13 @@
 // app/HealthConditionScreen.js
 import { router } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProgressBar from '../app/ProgressBar';
+import ProfileService from '../services/ProfileService';
 
+/** ====== Danh mục hiển thị trong UI ====== */
 const BASE_CONDITIONS = [
   { title: 'Tiểu đường', description: 'Type 1/Type 2' },
   { title: 'Huyết áp cao', description: 'Tăng huyết áp' },
@@ -27,20 +29,72 @@ const BASE_CONDITIONS = [
   { title: 'Mang thai/Cho con bú', description: 'Thời kỳ đặc biệt' },
   { title: 'Thừa cân/Béo phì', description: 'BMI > 25' },
   { title: 'Thiếu cân', description: 'BMI < 18.5' },
-  { title: 'Bệnh phổi mãn tính', description: 'Bệnh phổi tắc nghe'},
+  { title: 'Bệnh phổi mãn tính', description: 'Bệnh phổi mạn' },
 ];
+
+/** ====== Map nhãn → code ổn định để lưu file ====== */
+const CONDITION_CODES = {
+  'Tiểu đường': 'diabetes',
+  'Huyết áp cao': 'hypertension',
+  'Bệnh tim mạch': 'cardiovascular',
+  'Rối loạn mỡ máu': 'lipid_disorder',
+  'Bệnh thận mạn': 'ckd',
+  'Bệnh gan': 'liver_disease',
+  'Gút': 'gout',
+  'Rối loạn tuyến giáp': 'thyroid_disorder',
+  'Celiac/nhạy gluten': 'celiac',
+  'Không dung nạp Lactose': 'lactose_intolerance',
+  'Hội chứng ruột kích thích (IBS)': 'ibs',
+  'GERD/Trào ngược dạ dày': 'gerd',
+  'Hen phế quản': 'asthma',
+  'COPD': 'copd',
+  'Bệnh phổi mãn tính': 'copd',
+  'Thiếu máu/Thiếu sắt': 'anemia',
+  'Loãng xương': 'osteoporosis',
+  'PCOS': 'pcos',
+  'Mang thai/Cho con bú': 'pregnancy',
+  'Thừa cân/Béo phì': 'obesity',
+  'Thiếu cân': 'underweight',
+};
+
+/** Map ngược code → nhãn để prefill về UI */
+const CODE_TO_TITLE = Object.fromEntries(
+  Object.entries(CONDITION_CODES).map(([label, code]) => [code, label])
+);
 
 const normalize = (s = '') =>
   s.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 export default function HealthConditionScreen() {
-  const [selectedMap, setSelectedMap] = useState({});
+  const [selectedMap, setSelectedMap] = useState({}); // { [labelOrCustom]: true }
   const [query, setQuery] = useState('');
   const [otherText, setOtherText] = useState('');
   const [isListOpen, setIsListOpen] = useState(false);
-  const [showOther, setShowOther] = useState(false); // 👈 ẩn/hiện ô “Tình trạng khác”
+  const [showOther, setShowOther] = useState(false);
   const TOTAL_STEPS = 4;
   const CURRENT_STEP = 2;
+
+  /** Prefill từ bản nháp */
+  useEffect(() => {
+    (async () => {
+      const d = await ProfileService.loadDraft();
+      const fromDraft = {};
+
+      // conditions: mảng code -> map lại về nhãn nếu có, nếu không giữ nguyên chuỗi để hiển thị ở vùng "đã chọn"
+      if (Array.isArray(d.conditions)) {
+        d.conditions.forEach((code) => {
+          const label = CODE_TO_TITLE[code] || code;
+          fromDraft[label] = true;
+        });
+      }
+      // other_conditions: mảng chuỗi tự do
+      if (Array.isArray(d.other_conditions)) {
+        d.other_conditions.forEach((txt) => { fromDraft[String(txt)] = true; });
+      }
+
+      setSelectedMap(fromDraft);
+    })();
+  }, []);
 
   const toggleCondition = (title) => {
     setSelectedMap((prev) => ({ ...prev, [title]: !prev[title] }));
@@ -70,6 +124,19 @@ export default function HealthConditionScreen() {
   }, [query]);
 
   const selectedList = Object.keys(selectedMap).filter((k) => selectedMap[k]);
+
+  /** Lưu bản nháp rồi sang bước tiếp theo */
+  const goNext = async () => {
+    const codes = [];
+    const others = [];
+    for (const labelOrCustom of selectedList) {
+      const code = CONDITION_CODES[labelOrCustom];
+      if (code) codes.push(code);
+      else others.push(labelOrCustom);
+    }
+    await ProfileService.saveDraft({ conditions: codes, other_conditions: others });
+    router.push('AllergyScreen');
+  };
 
   return (
     <SafeAreaView style={styles.wrapper} edges={['top', 'left', 'right']}>
@@ -217,7 +284,7 @@ export default function HealthConditionScreen() {
 
       {/* Footer NEXT */}
       <SafeAreaView edges={['bottom']} style={styles.footer}>
-        <TouchableOpacity style={styles.nextButton} onPress={() => router.push('AllergyScreen')}>
+        <TouchableOpacity style={styles.nextButton} onPress={goNext}>
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
           <MaterialIcons name="arrow-forward" size={20} color="white" />
         </TouchableOpacity>
@@ -326,7 +393,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   otherToggleText: {
-    fontSize: 12,            // nhỏ hơn
+    fontSize: 12,
     color: '#17863d',
     fontWeight: '700',
   },

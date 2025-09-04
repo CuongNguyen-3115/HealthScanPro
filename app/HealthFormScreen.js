@@ -1,8 +1,9 @@
-//app/HealthFormScreen.js
+// app/HealthFormScreen.js
 import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,17 +13,70 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProgressBar from '../app/ProgressBar';
+import ProfileService from '../services/ProfileService';
 
+// Map mức độ vận động (giá trị trong Picker) -> code lưu trong hồ sơ
+const ACTIVITY_VALUE_TO_CODE = {
+  '1': 'sedentary',
+  '2': 'light',
+  '3': 'moderate',
+  '4': 'high',
+  '5': 'athlete',
+};
+// Ngược lại: code -> giá trị Picker (để prefill)
+const CODE_TO_ACTIVITY_VALUE = Object.fromEntries(
+  Object.entries(ACTIVITY_VALUE_TO_CODE).map(([k, v]) => [v, k])
+);
 
 export default function HealthFormScreen() {
   const [age, setAge] = useState('');
-  const [gender, setGender] = useState('');
+  const [gender, setGender] = useState('');           // 'male' | 'female'
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
-  const [activity, setActivity] = useState('');
+  const [activity, setActivity] = useState('');       // '1'..'5'
   const TOTAL_STEPS = 4;
   const CURRENT_STEP = 1;
 
+  // Prefill từ bản nháp (nếu đã có)
+  useEffect(() => {
+    (async () => {
+      const d = await ProfileService.loadDraft();
+      const b = d.basic || {};
+      if (b.age != null) setAge(String(b.age));
+      if (b.sex) setGender(b.sex); // 'male' | 'female'
+      if (b.weight_kg != null) setWeight(String(b.weight_kg));
+      if (b.height_cm != null) setHeight(String(b.height_cm));
+      if (b.activity_level) {
+        setActivity(CODE_TO_ACTIVITY_VALUE[b.activity_level] || '');
+      }
+    })();
+  }, []);
+
+  const onNext = async () => {
+    if (!age || !gender || !weight || !height || !activity) {
+      return Alert.alert('Thiếu thông tin', 'Vui lòng điền đầy đủ các trường.');
+    }
+    const ageNum = parseInt(age, 10);
+    const weightNum = parseFloat(weight);
+    const heightNum = parseFloat(height);
+    const activityCode = ACTIVITY_VALUE_TO_CODE[activity];
+
+    if (Number.isNaN(ageNum) || Number.isNaN(weightNum) || Number.isNaN(heightNum)) {
+      return Alert.alert('Dữ liệu không hợp lệ', 'Tuổi, cân nặng và chiều cao phải là số.');
+    }
+
+    await ProfileService.saveDraft({
+      basic: {
+        age: ageNum,
+        sex: gender,                 // 'male' | 'female'
+        weight_kg: weightNum,
+        height_cm: heightNum,
+        activity_level: activityCode // 'sedentary' | 'light' | ...
+      },
+    });
+
+    router.push('HealthConditionScreen');
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -91,11 +145,7 @@ export default function HealthFormScreen() {
             </Picker>
           </View>
 
-          {/* ✅ Đặt nút TIẾP THEO vào cuối form luôn */}
-          <TouchableOpacity
-            style={styles.nextButton}
-            onPress={() => router.push('HealthConditionScreen')}
-          >
+          <TouchableOpacity style={styles.nextButton} onPress={onNext}>
             <Text style={styles.nextButtonText}>Tiếp theo</Text>
             <MaterialIcons name="arrow-forward" size={20} color="white" />
           </TouchableOpacity>

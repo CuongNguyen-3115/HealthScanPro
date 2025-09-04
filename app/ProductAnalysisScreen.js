@@ -1,274 +1,229 @@
 // app/ProductAnalysisScreen.js
-
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
-    Dimensions,
-    Modal,
-    ScrollView,
-    StyleSheet,
+    Image,
+    ScrollView, StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
-
-const { width } = Dimensions.get('window');
-// Giảm kích thước để chắc chắn chart hiển thị trọn vẹn
-const CHART_SIZE = width * 0.35;
-
-// Dữ liệu mẫu
-const SAMPLE_INGREDIENTS = [
-  { name: 'Aqua', riskLevel: 'safe', riskScore: 1, function: 'Dung môi', concerns: [], usage: 'Giữ ẩm cho da' },
-  { name: 'Methylparaben', riskLevel: 'harmful', riskScore: 8, function: 'Chất bảo quản', concerns: ['Có thể gây rối loạn nội tiết'], usage: 'Bảo quản sản phẩm' },
-  { name: 'Glycerin', riskLevel: 'safe', riskScore: 2, function: 'Dưỡng ẩm', concerns: [], usage: 'Tăng độ ẩm' },
-  { name: 'Sodium Laureth Sulfate', riskLevel: 'moderate', riskScore: 6, function: 'Tạo bọt', concerns: ['Có thể làm khô da nếu dùng nhiều'], usage: 'Tạo bọt làm sạch' },
-  { name: 'Fragrance', riskLevel: 'moderate', riskScore: 5, function: 'Hương liệu', concerns: ['Có thể gây kích ứng'], usage: 'Tạo mùi thơm' },
-  { name: 'Alcohol Denat', riskLevel: 'harmful', riskScore: 7, function: 'Dung môi', concerns: ['Gây khô da'], usage: 'Tan dầu cho công thức' },
-];
-
-const SAMPLE_ALTERNATIVES = [
-  {
-    name: 'CeraVe Foaming Cleanser',
-    brand: 'CeraVe',
-    score: 2,
-    price: '320.000đ',
-    keyBenefits: ['Không paraben', 'Có ceramide', 'Dịu nhẹ'],
-    availableAt: ['Guardian', 'Watsons', 'Online'],
-  },
-  {
-    name: 'La Roche-Posay Toleriane Wash',
-    brand: 'La Roche-Posay',
-    score: 1,
-    price: '450.000đ',
-    keyBenefits: ['Không sulfate', 'Dành cho da nhạy cảm', 'Nước khoáng'],
-    availableAt: ['Pharmacies', 'Guardian', 'Hasaki'],
-  },
-];
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function ProductAnalysisScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const { photoUri, label: labelStr } = useLocalSearchParams();
 
-  const productName  = params.productName  ?? 'Sản phẩm mẫu';
-  const overallScore = Number(params.overallScore) || 5;
-  let ingredients   = SAMPLE_INGREDIENTS;
-  if (params.ingredients) {
-    try { ingredients = JSON.parse(params.ingredients); } catch {}
+  const label = useMemo(() => {
+    try { return labelStr ? JSON.parse(labelStr) : null; } catch { return null; }
+  }, [labelStr]);
+
+  if (!label) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={styles.title}>Không có dữ liệu nhãn</Text>
+        <Text style={styles.dim}>Hãy quay lại và phân tích ảnh trước.</Text>
+        <TouchableOpacity style={styles.btn} onPress={() => router.back()}>
+          <Text style={styles.btnText}>← Quay lại</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
-  const profile = params.userProfile
-    ? JSON.parse(params.userProfile)
-    : {
-        skinType: 'Da hỗn hợp',
-        skinConcerns: ['Mụn đầu đen'],
-        allergies: ['Paraben'],
-        ageGroup: '25-35 tuổi',
-        isPregnant: false,
-      };
 
-  const summary = ingredients.reduce((acc, i) => {
-    acc[i.riskLevel] = (acc[i.riskLevel] || 0) + 1;
-    return acc;
-  }, { safe: 0, moderate: 0, harmful: 0 });
-
-  const chartData = [
-    { name: 'An toàn',    count: summary.safe,     color: '#4CAF50' },
-    { name: 'Trung bình', count: summary.moderate, color: '#FFC107' },
-    { name: 'Có hại',     count: summary.harmful,  color: '#F44336' },
-  ];
-
-  const getRiskColor = lvl =>
-    lvl === 'safe'     ? '#4CAF50'
-  : lvl === 'moderate' ? '#FFC107'
-  :                      '#F44336';
-
-  const getScoreLabel = s => {
-    if (s <= 3) return { text: 'Sạch',       bg: '#4CAF50' };
-    if (s <= 6) return { text: 'Trung bình', bg: '#FFC107' };
-    return { text: 'Không sạch', bg: '#F44336' };
-  };
-  const scoreInfo = getScoreLabel(overallScore);
-
-  const [modalData, setModalData] = useState(null);
-
-  const aiAnalysis = `Dựa trên hồ sơ da (${profile.skinType}, tuổi ${profile.ageGroup}, dị ứng ${profile.allergies.join(' và ')}), sản phẩm có điểm rủi ro ${overallScore}/10.`;
-  const handleEvaluate = () => {
-    router.push({
-      pathname: '/PersonalizedAssessment',
-      params: {
-        userProfile:       JSON.stringify(profile),
-        productScore:      String(overallScore),
-        personalizedScore: String(overallScore),
-        ingredients:       JSON.stringify(ingredients),
-        alternatives:      JSON.stringify(SAMPLE_ALTERNATIVES),
-        aiAnalysis,
-      },
-    });
-  };
+  const ingredients = Array.isArray(label?.ingredients) ? label.ingredients : [];
+  const allergensCount = ingredients.filter(it => it?.is_allergen).length;
+  const nutrients = Array.isArray(label?.nutrition_facts?.nutrients)
+    ? label.nutrition_facts.nutrients : [];
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Back button với marginTop đủ lớn */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Header */}
+      <Text style={styles.pageTitle}>Kết Quả Phân Tích</Text>
+      <Text style={styles.method}>Phương pháp: Chụp ảnh</Text>
 
-      {/* Overall Score */}
+      {/* Hero card */}
+      <View style={styles.hero}>
+        {photoUri ? <Image source={{ uri: photoUri }} style={styles.preview} /> : <View style={styles.previewFallback} />}
+        <View style={{ alignItems: 'center', marginTop: 8 }}>
+          <Text style={styles.heroTitle}>Sản phẩm đã quét</Text>
+          <View style={styles.badgeOkay}><Text style={styles.badgeOkayText}>Đã phân tích</Text></View>
+        </View>
+      </View>
+
+      {/* (Đã bỏ hẳn khung cảnh báo như yêu cầu) */}
+
+      {/* Tổng quan thành phần */}
       <View style={styles.card}>
-        <Text style={styles.title}>{productName}</Text>
-        <View style={styles.scoreBox}>
-          <View style={[styles.scoreCircle, { backgroundColor: scoreInfo.bg }]}>
-            <Text style={styles.scoreText}>{overallScore}</Text>
+        <Text style={styles.sectionTitle}>Tổng quan thành phần</Text>
+
+        <View style={styles.metricsRow}>
+          <View style={[styles.metricBox, styles.metricLeft]}>
+            <Text style={styles.metricNumber}>{ingredients.length}</Text>
+            <Text style={styles.metricLabel}>Tổng thành phần</Text>
           </View>
-          <Text style={styles.scoreLabel}>{scoreInfo.text}</Text>
+          <View style={[styles.metricBox, styles.metricRight]}>
+            <Text style={[styles.metricNumber, { color: '#d93025' }]}>{allergensCount}</Text>
+            <Text style={[styles.metricLabel, { color: '#d93025' }]}>Chất gây dị ứng</Text>
+          </View>
         </View>
+
+        <Text style={[styles.subheading, { marginTop: 14 }]}>Danh sách thành phần gốc:</Text>
+        <Text style={styles.rawText}>{label.ingredients_raw || '(trống)'}</Text>
       </View>
 
-      {/* Pie Chart */}
+      {/* Hai khung cố định + scroll dọc */}
+      {/* Chi tiết thành phần */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Tổng quan thành phần</Text>
-        <View style={styles.chartWrapper}>
-          <PieChart
-            data={chartData.map(d => ({
-              name: d.name,
-              population: d.count,
-              color: d.color,
-              legendFontColor: '#333',
-              legendFontSize: 12,
-            }))}
-            width={CHART_SIZE}
-            height={CHART_SIZE}
-            chartConfig={{
-              backgroundGradientFrom: '#fff',
-              backgroundGradientTo: '#fff',
-              color: () => '#000',
-            }}
-            accessor="population"
-            backgroundColor="transparent"
-            paddingLeft="20"
-            hasLegend={false}
-          />
-        </View>
-        <View style={styles.legendContainer}>
-          {chartData.map((d, i) => (
-            <View key={i} style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: d.color }]} />
-              <Text style={styles.legendLabel}>{d.name} ({d.count})</Text>
+        <Text style={styles.sectionTitle}>Chi tiết thành phần</Text>
+        <ScrollView
+          style={styles.fixedScrollArea}
+          contentContainerStyle={{ paddingBottom: 8 }}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator
+        >
+          {ingredients.length ? ingredients.map((it, i) => (
+            <View key={i} style={styles.row}>
+              <Text style={[styles.bold, { flex: 2 }]} numberOfLines={2}>{it?.name || '?'}</Text>
+
+              <View style={[styles.cell, { flex: 1, alignItems: 'flex-end' }]}>
+                <Text style={styles.chip}>
+                  {it?.percentage != null ? String(it.percentage) : '-'}
+                </Text>
+              </View>
+
+              <View style={[styles.cell, { flex: 1, alignItems: 'center' }]}>
+                <View style={[styles.pill, it?.is_allergen ? styles.pillDanger : styles.pillOk]}>
+                  <Text style={it?.is_allergen ? styles.pillDangerText : styles.pillOkText}>
+                    {it?.is_allergen ? 'Có' : 'Không'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.cell, { flex: 2, alignItems: 'flex-end' }]}>
+                <Text style={[styles.dim, { textAlign: 'right' }]} numberOfLines={2}>
+                  {it?.notes ? `(${it.notes})` : '-'}
+                </Text>
+              </View>
             </View>
-          ))}
-        </View>
+          )) : <Text style={styles.dim}>— Không có —</Text>}
+        </ScrollView>
       </View>
 
-      {/* Danh sách thành phần: scroll dọc trong vùng cố định */}
+      {/* Thông tin dinh dưỡng */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Danh sách thành phần</Text>
-        <View style={styles.ingListWrapper}>
-          <ScrollView
-            nestedScrollEnabled
-            showsVerticalScrollIndicator
-          >
-            {ingredients.map((ing, i) => (
-              <TouchableOpacity
-                key={i}
-                style={styles.ingItem}
-                onPress={() => setModalData(ing)}
-              >
-                <View style={styles.ingRow}>
-                  <Ionicons
-                    name={
-                      ing.riskLevel === 'harmful'   ? 'warning' :
-                      ing.riskLevel === 'moderate'  ? 'alert-circle' :
-                                                       'shield-checkmark'
-                    }
-                    size={20}
-                    color={getRiskColor(ing.riskLevel)}
-                  />
-                  <Text style={styles.ingName}>{ing.name}</Text>
-                  <Text style={styles.ingFunc}>{ing.function}</Text>
-                </View>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      {
-                        width: `${ing.riskScore * 10}%`,
-                        backgroundColor: getRiskColor(ing.riskLevel),
-                      },
-                    ]}
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+        <Text style={styles.sectionTitle}>Thông tin dinh dưỡng</Text>
+
+        <View style={styles.nutriHeader}>
+          <View style={[styles.nutriTile, { backgroundColor: '#eaf6ef' }]}>
+            <Text style={[styles.nutriBig, { color: '#198754' }]}>{label?.nutrition_facts?.calories || '-'}</Text>
+            <Text style={styles.nutriSmall}>Calo</Text>
+          </View>
+          <View style={[styles.nutriTile, { backgroundColor: '#eaf6ef' }]}>
+            <Text style={[styles.nutriBig, { color: '#198754' }]}>
+              {label?.nutrition_facts?.serving_size || '-'}
+            </Text>
+            <Text style={styles.nutriSmall}>Khẩu phần</Text>
+          </View>
         </View>
+
+        <ScrollView
+          style={styles.fixedScrollArea}
+          contentContainerStyle={{ paddingBottom: 8 }}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator
+        >
+          {nutrients.length ? nutrients.map((n, i) => (
+            <View key={i} style={styles.nutriRow}>
+              <Text style={[styles.bold, { flex: 1 }]}>{n?.name || '?'}</Text>
+              <Text style={styles.kvRight}>
+                {`${n?.amount ?? ''} ${n?.unit ?? ''}`.trim()}
+                {n?.daily_value_percent ? ` (${n.daily_value_percent})` : ''}
+              </Text>
+            </View>
+          )) : <Text style={styles.dim}>— Không có —</Text>}
+
+          <Text style={[styles.dim, { marginTop: 8 }]}>
+            Lưu ý: Số lượng khẩu phần trên bao bì: {label?.nutrition_facts?.servings_per_container || '-'}
+          </Text>
+        </ScrollView>
       </View>
 
-      {/* Nút Đánh giá */}
-      <TouchableOpacity style={styles.evalBtn} onPress={handleEvaluate}>
-        <Text style={styles.evalText}>Đánh giá</Text>
+      {/* Back */}
+      <TouchableOpacity style={[styles.btn, { alignSelf: 'center', marginBottom: 24 }]} onPress={() => router.back()}>
+        <Text style={styles.btnText}>← Quay lại quét ảnh khác</Text>
       </TouchableOpacity>
-
-      {/* Modal chi tiết thành phần */}
-      {modalData && (
-        <Modal visible onRequestClose={() => setModalData(null)} animationType="slide">
-          <ScrollView style={styles.modalContent}>
-            <TouchableOpacity onPress={() => setModalData(null)}>
-              <MaterialIcons name="close" size={28} color="#333" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>{modalData.name}</Text>
-            <Text style={{ color: getRiskColor(modalData.riskLevel), fontWeight: 'bold' }}>
-              {modalData.riskScore}/10
-            </Text>
-            <Text style={styles.sectionHeader}>Công dụng</Text>
-            <Text>{modalData.usage}</Text>
-            {modalData.concerns.length > 0 && (
-              <>
-                <Text style={styles.sectionHeader}>Mối quan ngại</Text>
-                {modalData.concerns.map((c, j) => <Text key={j}>• {c}</Text>)}
-              </>
-            )}
-          </ScrollView>
-        </Modal>
-      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:        { flex: 1, padding: 12, paddingTop: 60, backgroundColor: '#f3fdf7' },
-  backButton:       { position: 'absolute', top: 16, left: 16, zIndex: 10 },
+  container: { padding: 16, backgroundColor: '#f3fdf7' },
+  pageTitle: { fontSize: 22, fontWeight: '800', color: '#0b1020' },
+  method: { color: '#548a6e', marginTop: 4, marginBottom: 12 },
 
-  card:             { backgroundColor: '#fff', borderRadius: 8, padding: 12, marginBottom: 12, elevation: 2 },
-  title:            { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  hero: {
+    backgroundColor: '#fff', borderRadius: 14, padding: 12, marginBottom: 14,
+    borderWidth: 1, borderColor: '#e5efe9',
+  },
+  preview: { width: '100%', height: 200, borderRadius: 10, backgroundColor: '#eef5f0' },
+  previewFallback: { width: '100%', height: 200, borderRadius: 10, backgroundColor: '#eef5f0' },
+  heroTitle: { fontSize: 18, fontWeight: '700', color: '#163c2a' },
+  badgeOkay: { marginTop: 6, backgroundColor: '#eaf6ef', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
+  badgeOkayText: { color: '#198754', fontWeight: '700' },
 
-  scoreBox:         { alignItems: 'center' },
-  scoreCircle:      { width: 68, height: 68, borderRadius: 34, justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  scoreText:        { fontSize: 24, color: '#fff', fontWeight: 'bold' },
-  scoreLabel:       { fontSize: 14, color: '#666' },
+  card: {
+    backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14,
+    borderWidth: 1, borderColor: '#e5efe9',
+  },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#163c2a', marginBottom: 10 },
 
-  cardTitle:        { fontSize: 16, fontWeight: '600', marginBottom: 8 },
+  // Tổng quan
+  metricsRow: { flexDirection: 'row', gap: 12 },
+  metricBox: {
+    flex: 1, backgroundColor: '#f2fbf6', borderRadius: 12, paddingVertical: 16,
+    alignItems: 'center', borderWidth: 1, borderColor: '#e1f1e7',
+  },
+  metricLeft: {},
+  metricRight: { backgroundColor: '#fff2f1', borderColor: '#f5d0ce' },
+  metricNumber: { fontSize: 28, fontWeight: '900', color: '#198754' },
+  metricLabel: { marginTop: 4, color: '#6b7b6e' },
+  subheading: { fontWeight: '700', color: '#2d3b31' },
+  rawText: { color: '#385143', marginTop: 6, lineHeight: 20 },
 
-  // Chart wrapper vuông để PieChart không bị méo
-  chartWrapper:     { width: CHART_SIZE, height: CHART_SIZE, alignSelf: 'center', marginBottom: 8 },
-  legendContainer:  { paddingLeft: 12 },
-  legendItem:       { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
-  legendDot:        { width: 12, height: 12, borderRadius: 6, marginRight: 6 },
-  legendLabel:      { fontSize: 12 },
+  // Bảng chi tiết thành phần
+  fixedScrollArea: {
+    height: 320,   // << vùng CỐ ĐỊNH + scroll dọc
+    borderWidth: 1, borderColor: '#eef3f0', borderRadius: 10, padding: 8, backgroundColor: '#fcfefd',
+  },
+  row: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e9f0ec',
+  },
+  cell: { minWidth: 60 },
+  chip: {
+    backgroundColor: '#eef5f0', color: '#255c41', paddingHorizontal: 8, paddingVertical: 4,
+    borderRadius: 8, overflow: 'hidden',
+  },
+  pill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, borderWidth: 1 },
+  pillOk: { backgroundColor: '#e8f5ee', borderColor: '#cde9db' },
+  pillOkText: { color: '#237a57', fontWeight: '700' },
+  pillDanger: { backgroundColor: '#fde8e6', borderColor: '#f5c6c3' },
+  pillDangerText: { color: '#d93025', fontWeight: '700' },
 
-  // Danh sách thành phần: vùng cố định, scroll dọc
-  ingListWrapper:   { maxHeight: 200 },  // bạn có thể điều chỉnh chiều cao
-  ingItem:          { marginBottom: 12, padding: 8, backgroundColor: '#fafafa', borderRadius: 6 },
-  ingRow:           { flexDirection: 'row', alignItems: 'center' },
-  ingName:          { flex: 1, marginLeft: 6, fontSize: 14 },
-  ingFunc:          { fontSize: 12, color: '#888' },
-  progressBar:      { height: 6, backgroundColor: '#eee', borderRadius: 3, overflow: 'hidden', marginTop: 4 },
-  progressFill:     { height: 6 },
+  // Nutrition
+  nutriHeader: { flexDirection: 'row', gap: 12, marginBottom: 10 },
+  nutriTile: {
+    flex: 1, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 12,
+    borderWidth: 1, borderColor: '#d9e9df',
+  },
+  nutriBig: { fontSize: 20, fontWeight: '900' },
+  nutriSmall: { color: '#2e5b43', marginTop: 2 },
+  nutriRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e9f0ec' },
+  kvRight: { color: '#1b2b22', fontWeight: '700' },
 
-  evalBtn:          { backgroundColor: '#198754', padding: 14, borderRadius: 8, alignItems: 'center', marginVertical: 12 },
-  evalText:         { color: '#fff', fontWeight: 'bold' },
+  // Generic
+  bold: { fontWeight: '700', color: '#1b2b22' },
+  dim: { color: '#7c8f84' },
 
-  modalContent:     { flex: 1, padding: 12, backgroundColor: '#fff' },
-  modalTitle:       { fontSize: 22, fontWeight: 'bold', marginVertical: 12 },
-  sectionHeader:    { fontSize: 16, fontWeight: '600', marginTop: 12, marginBottom: 4 },
+  btn: { backgroundColor: '#2b5cff', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10 },
+  btnText: { color: '#fff', fontWeight: '700' },
 });

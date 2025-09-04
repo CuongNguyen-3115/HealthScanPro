@@ -1,11 +1,15 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+// Frontend/_components/ThemedText.tsx
+import { StyleSheet, Text, type TextProps, type TextStyle } from 'react-native';
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+// ✅ Dùng relative path để tránh lỗi alias; 
+// nếu bạn đã cấu hình '@/*' hoạt động, có thể đổi lại '@/hooks/useThemeColor'
+import { useThemeColor } from '../hooks/useThemeColor';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  style?: TextStyle | TextStyle[];
 };
 
 export function ThemedText({
@@ -19,6 +23,7 @@ export function ThemedText({
 
   return (
     <Text
+      {...rest}
       style={[
         { color },
         type === 'default' ? styles.default : undefined,
@@ -28,7 +33,6 @@ export function ThemedText({
         type === 'link' ? styles.link : undefined,
         style,
       ]}
-      {...rest}
     />
   );
 }
