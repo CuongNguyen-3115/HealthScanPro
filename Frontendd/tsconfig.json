@@ -4,16 +4,18 @@
     "strict": true,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
-    "paths": {
-      "@/*": ["./*"]
-    },
-    "types": ["react", "react-native"]
+    "paths": { "@/*": ["./*"] },
+    "types": ["react", "react-native"],
+
+    "allowJs": true,   // ✅ cho phép file .js/.jsx
+    "checkJs": false   // (tuỳ) không type-check file .js
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.js",         // ✅ thêm .js
+    "**/*.jsx",        // ✅ (nếu có)
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "Frontend/app/(tabs)/index.js"
+    "expo-env.d.ts"
   ]
 }
