@@ -1,3 +1,4 @@
+
 //app/HealthFormScreen.js
 import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router';
@@ -31,7 +32,7 @@ export default function HealthFormScreen() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        <TouchableOpacity onPress={() => router.back()} style={{ alignSelf: 'flex-start' }}>
+        <TouchableOpacity onPress={() => router.push('HomeScreen')} style={{ alignSelf: 'flex-start' }}>
           <MaterialIcons name="arrow-back" size={24} color="green" />
         </TouchableOpacity>
 

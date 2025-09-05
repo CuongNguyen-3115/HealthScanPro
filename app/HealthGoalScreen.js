@@ -86,7 +86,7 @@ export default function HealthGoalScreen() {
       {/* Hoàn thành */}
       <TouchableOpacity
         style={styles.finishButton}
-        onPress={() => router.push('ScanProductScreen')}
+        onPress={() => router.push('HomeScreen')}
       >
         <Text style={styles.finishText}>Hoàn thành</Text>
         <Ionicons
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   finishButton: {
     position: 'absolute',
-    bottom: 180,
+    bottom: 10,
     left: 16,
     right: 16,
     backgroundColor: 'green',
