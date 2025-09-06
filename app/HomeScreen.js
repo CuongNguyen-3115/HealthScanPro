@@ -1,4 +1,4 @@
-// app/index.js
+// app/HomeScreen.js
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -13,11 +13,25 @@ import {
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height } = Dimensions.get('window');
 
 export default function Index() {
   const router = useRouter();
+
+  // Khi bấm "Xem Thông tin sức khỏe"
+  const onPressViewProfile = async () => {
+    try {
+      const raw = await AsyncStorage.getItem('healthProfile');
+      const obj = raw ? JSON.parse(raw) : null;
+      const hasData = obj && Object.keys(obj).length > 0;
+      router.push(hasData ? '/HealthProfileViewScreen' : '/HealthProfileEmptyScreen');
+    } catch (e) {
+      // Nếu có lỗi đọc storage thì trỏ về màn rỗng
+      router.push('/HealthProfileEmptyScreen');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,9 +61,9 @@ export default function Index() {
 
             <View style={styles.actions}>
               <TouchableOpacity
-                style={[styles.buttonGreen, styles.mb12]} // đảm bảo khoảng cách kể cả khi 'gap' không hỗ trợ
+                style={[styles.buttonGreen, styles.mb12]}
                 activeOpacity={0.8}
-                onPress={() => router.push('HealthFormScreen')}
+                onPress={() => router.push('/HealthFormScreen')}
               >
                 <MaterialIcons name="edit" size={18} color="white" />
                 <Text style={styles.buttonText}>Điền Thông Tin Sức Khỏe</Text>
@@ -58,7 +72,7 @@ export default function Index() {
               <TouchableOpacity
                 style={styles.buttonGreen}
                 activeOpacity={0.8}
-                onPress={() => router.push('HealthProfileViewScreen')}
+                onPress={onPressViewProfile}
               >
                 <MaterialIcons name="search" size={18} color="white" />
                 <Text style={styles.buttonText}>Xem Thông tin sức khỏe</Text>
@@ -70,7 +84,7 @@ export default function Index() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Image source={require('../assets/images/scan.png')} style={styles.cardIconLarge} />
-              <Text style={styles.cardTitle}>Quét Ngay</Text>
+              <Text style={styles.cardTitle}>Quét Sản Phẩm</Text>
             </View>
 
             <Text style={styles.cardDescription}>
@@ -80,9 +94,9 @@ export default function Index() {
             <TouchableOpacity
               style={styles.buttonTeal}
               activeOpacity={0.8}
-              onPress={() => router.push('ScanProductScreen')}
+              onPress={() => router.push('/ScanProductScreen')}
             >
-              <FontAwesome5 name="search" size={18} color="white" />
+              <MaterialIcons name="search" size={18} color="white" />
               <Text style={styles.buttonText}>Quét Sản Phẩm</Text>
             </TouchableOpacity>
           </View>
@@ -153,8 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
-    elevation: 2, // Android shadow
-    // iOS shadow (nếu cần)
+    elevation: 2,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
@@ -183,8 +196,8 @@ const styles = StyleSheet.create({
   },
   actions: {
     width: '100%',
-    marginTop: 12, // khoảng cách block nút với phần trên card
-    gap: 12,        // khoảng cách giữa 2 nút (nếu RN hỗ trợ)
+    marginTop: 12,
+    gap: 12,
   },
   buttonGreen: {
     flexDirection: 'row',
@@ -210,7 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   mb12: {
-    marginBottom: 12, // fallback khi 'gap' không hoạt động
+    marginBottom: 12,
   },
   footerIcons: {
     flexDirection: 'row',

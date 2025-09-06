@@ -1,10 +1,26 @@
 // app/HealthConditionScreen.js
+/**
+ * HealthConditionScreen
+ * - Cho phép tìm, gợi ý, chọn các tình trạng sức khỏe (toggle + "tình trạng khác")
+ * - Khi bấm "Tiếp theo": lưu dữ liệu vào AsyncStorage (via setSection) theo cấu trúc:
+ *   conditions: { selected: [...], other: [...] }
+ * - Tự động nạp lại lựa chọn đã lưu trước đó (nếu có).
+ */
 import { router } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ProgressBar from '../app/ProgressBar';
+import ProgressBar from './ProgressBar';
+import { getProfile, setSection } from './lib/profileStorage';
 
 const BASE_CONDITIONS = [
   { title: 'Tiểu đường', description: 'Type 1/Type 2' },
@@ -37,10 +53,28 @@ export default function HealthConditionScreen() {
   const [query, setQuery] = useState('');
   const [otherText, setOtherText] = useState('');
   const [isListOpen, setIsListOpen] = useState(false);
-  const [showOther, setShowOther] = useState(false); // 👈 ẩn/hiện ô “Tình trạng khác”
+  const [showOther, setShowOther] = useState(false);
+
   const TOTAL_STEPS = 4;
   const CURRENT_STEP = 2;
 
+  /** ===== Khởi tạo từ dữ liệu đã lưu (nếu có) ===== */
+  useEffect(() => {
+    (async () => {
+      const p = await getProfile();
+      const saved = [
+        ...(p?.conditions?.selected ?? []),
+        ...(p?.conditions?.other ?? []),
+      ];
+      if (saved.length) {
+        const map = {};
+        saved.forEach((t) => (map[t] = true));
+        setSelectedMap(map);
+      }
+    })();
+  }, []);
+
+  /** ===== Logic chọn/bỏ chọn ===== */
   const toggleCondition = (title) => {
     setSelectedMap((prev) => ({ ...prev, [title]: !prev[title] }));
   };
@@ -52,6 +86,7 @@ export default function HealthConditionScreen() {
     setOtherText('');
   };
 
+  /** ===== Tìm kiếm / gợi ý ===== */
   const filtered = useMemo(() => {
     if (!query) return BASE_CONDITIONS;
     const q = normalize(query);
@@ -69,6 +104,23 @@ export default function HealthConditionScreen() {
   }, [query]);
 
   const selectedList = Object.keys(selectedMap).filter((k) => selectedMap[k]);
+
+  /** ===== Phân loại: base vs other (để lưu đúng schema) ===== */
+  const baseTitleSet = useMemo(
+    () => new Set(BASE_CONDITIONS.map((c) => c.title)),
+    []
+  );
+  const selectedBase = selectedList.filter((t) => baseTitleSet.has(t));
+  const selectedOther = selectedList.filter((t) => !baseTitleSet.has(t));
+
+  /** ===== Lưu & Next ===== */
+  const handleNext = async () => {
+    await setSection('conditions', {
+      selected: selectedBase,
+      other: selectedOther,
+    });
+    router.push('AllergyScreen');
+  };
 
   return (
     <SafeAreaView style={styles.wrapper} edges={['top', 'left', 'right']}>
@@ -216,7 +268,7 @@ export default function HealthConditionScreen() {
 
       {/* Footer NEXT */}
       <SafeAreaView edges={['bottom']} style={styles.footer}>
-        <TouchableOpacity style={styles.nextButton} onPress={() => router.push('AllergyScreen')}>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
           <MaterialIcons name="arrow-forward" size={20} color="white" />
         </TouchableOpacity>
@@ -240,11 +292,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 10,
   },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   searchInput: {
     flex: 1,
     borderWidth: 1,
@@ -308,10 +356,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontWeight: 'bold', marginVertical: 10, color: '#222' },
 
   /* Toggle “Tình trạng khác” góc phải */
-  otherHeaderRow: {
-    alignItems: 'flex-end',
-    marginTop: 8,
-  },
+  otherHeaderRow: { alignItems: 'flex-end', marginTop: 8 },
   otherToggleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -325,7 +370,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   otherToggleText: {
-    fontSize: 12,            // nhỏ hơn
+    fontSize: 12,
     color: '#17863d',
     fontWeight: '700',
   },
@@ -359,11 +404,7 @@ const styles = StyleSheet.create({
     margin: 4,
   },
 
-  footer: {
-    backgroundColor: '#F2FBF5',
-    paddingHorizontal: 16,
-    paddingTop: 6,
-  },
+  footer: { backgroundColor: '#F2FBF5', paddingHorizontal: 16, paddingTop: 6 },
   nextButton: {
     width: '100%',
     bottom: 10,

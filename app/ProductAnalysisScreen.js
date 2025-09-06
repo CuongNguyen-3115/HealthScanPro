@@ -1,10 +1,10 @@
 // app/ProductAnalysisScreen.js
 import React, { useMemo } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, Image,
+  View, Text, ScrollView, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function ProductAnalysisScreen() {
   const router = useRouter();
@@ -17,10 +17,11 @@ export default function ProductAnalysisScreen() {
   if (!label) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={styles.title}>Không có dữ liệu nhãn</Text>
+        <Text style={styles.pageTitle}>Không có dữ liệu nhãn</Text>
         <Text style={styles.dim}>Hãy quay lại và phân tích ảnh trước.</Text>
-        <TouchableOpacity style={styles.btn} onPress={() => router.back()}>
-          <Text style={styles.btnText}>← Quay lại</Text>
+        <TouchableOpacity style={[styles.btnGreen, { marginTop: 12 }]} onPress={() => router.push('ScanProductScreen')}>
+          <MaterialIcons name="arrow-back" size={18} color="#fff" />
+          <Text style={styles.btnGreenText}>Quay lại</Text>
         </TouchableOpacity>
       </View>
     );
@@ -33,6 +34,15 @@ export default function ProductAnalysisScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Back icon top-left */}
+      <TouchableOpacity
+        onPress={() => router.push('ScanProductScreen')}
+        style={styles.backIcon}
+        accessibilityLabel="Quay lại quét ảnh"
+      >
+        <MaterialIcons name="arrow-back" size={22} color="#17863d" />
+      </TouchableOpacity>
+
       {/* Header */}
       <Text style={styles.pageTitle}>Kết Quả Phân Tích</Text>
       <Text style={styles.method}>Phương pháp: Chụp ảnh</Text>
@@ -45,8 +55,6 @@ export default function ProductAnalysisScreen() {
           <View style={styles.badgeOkay}><Text style={styles.badgeOkayText}>Đã phân tích</Text></View>
         </View>
       </View>
-
-      {/* (Đã bỏ hẳn khung cảnh báo như yêu cầu) */}
 
       {/* Tổng quan thành phần */}
       <View style={styles.card}>
@@ -67,7 +75,6 @@ export default function ProductAnalysisScreen() {
         <Text style={styles.rawText}>{label.ingredients_raw || '(trống)'}</Text>
       </View>
 
-      {/* Hai khung cố định + scroll dọc */}
       {/* Chi tiết thành phần */}
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Chi tiết thành phần</Text>
@@ -139,21 +146,39 @@ export default function ProductAnalysisScreen() {
           )) : <Text style={styles.dim}>— Không có —</Text>}
 
           <Text style={[styles.dim, { marginTop: 8 }]}>
-            Lưu ý: Số lượng khẩu phần trên bao bì: {label?.nutrition_facts?.servings_per_container || '-'}
+            Lưu ý (Số lượng khẩu phần trên bao bì): {label?.nutrition_facts?.servings_per_container || '-'}
           </Text>
         </ScrollView>
       </View>
 
-      {/* Back */}
-      <TouchableOpacity style={[styles.btn, { alignSelf: 'center', marginBottom: 24 }]} onPress={() => router.back()}>
-        <Text style={styles.btnText}>← Quay lại quét ảnh khác</Text>
-      </TouchableOpacity>
+      {/* CTA: Trang chủ & Trợ lý ảo */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={[styles.btnGreen, { flex: 1 }]}
+          onPress={() => router.push('HomeScreen')}
+          activeOpacity={0.9}
+        >
+          <MaterialIcons name="home" size={18} color="#fff" />
+          <Text style={styles.btnGreenText}>Trang chủ</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.btnGreen, { flex: 1 }]}
+          onPress={() => router.push('ChatbotScreen')}
+          activeOpacity={0.9}
+        >
+          <MaterialIcons name="smart-toy" size={18} color="#fff" />
+          <Text style={styles.btnGreenText}>Tư vấn trợ lý ảo</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: 16, backgroundColor: '#f3fdf7' },
+  backIcon: { alignSelf: 'flex-start', marginBottom: 6 },
+
   pageTitle: { fontSize: 22, fontWeight: '800', color: '#0b1020' },
   method: { color: '#548a6e', marginTop: 4, marginBottom: 12 },
 
@@ -173,7 +198,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 16, fontWeight: '800', color: '#163c2a', marginBottom: 10 },
 
-  // Tổng quan
   metricsRow: { flexDirection: 'row', gap: 12 },
   metricBox: {
     flex: 1, backgroundColor: '#f2fbf6', borderRadius: 12, paddingVertical: 16,
@@ -186,9 +210,8 @@ const styles = StyleSheet.create({
   subheading: { fontWeight: '700', color: '#2d3b31' },
   rawText: { color: '#385143', marginTop: 6, lineHeight: 20 },
 
-  // Bảng chi tiết thành phần
   fixedScrollArea: {
-    height: 320,   // << vùng CỐ ĐỊNH + scroll dọc
+    height: 320,
     borderWidth: 1, borderColor: '#eef3f0', borderRadius: 10, padding: 8, backgroundColor: '#fcfefd',
   },
   row: {
@@ -206,7 +229,6 @@ const styles = StyleSheet.create({
   pillDanger: { backgroundColor: '#fde8e6', borderColor: '#f5c6c3' },
   pillDangerText: { color: '#d93025', fontWeight: '700' },
 
-  // Nutrition
   nutriHeader: { flexDirection: 'row', gap: 12, marginBottom: 10 },
   nutriTile: {
     flex: 1, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 12,
@@ -217,10 +239,13 @@ const styles = StyleSheet.create({
   nutriRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e9f0ec' },
   kvRight: { color: '#1b2b22', fontWeight: '700' },
 
-  // Generic
   bold: { fontWeight: '700', color: '#1b2b22' },
   dim: { color: '#7c8f84' },
 
-  btn: { backgroundColor: '#2b5cff', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10 },
-  btnText: { color: '#fff', fontWeight: '700' },
+  actionRow: { flexDirection: 'row', gap: 12, marginTop: 6, marginBottom: 24 },
+  btnGreen: {
+    flexDirection: 'row', backgroundColor: '#17863d', paddingVertical: 12, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center', gap: 6,
+  },
+  btnGreenText: { color: '#fff', fontWeight: '700' },
 });

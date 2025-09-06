@@ -19,6 +19,8 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="HomeScreen" />
+        <Stack.Screen name="ChatbotScreen" />
+        <Stack.Screen name="HealthProfileViewScreen" />.
         <Stack.Screen name="HealthFormScreen" />
         <Stack.Screen name="HealthConditionScreen" />
         <Stack.Screen name="AllergyScreen" />
