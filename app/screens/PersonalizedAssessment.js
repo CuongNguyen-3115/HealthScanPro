@@ -104,7 +104,7 @@ export default function PersonalizedAssessmentScreen() {
       contentContainerStyle={{ paddingBottom: 80 }}
     >
       {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/screens/HomeScreen')}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
 
@@ -246,7 +246,7 @@ export default function PersonalizedAssessmentScreen() {
       {/* Button Quay lại trang chủ */}
       <TouchableOpacity
         style={styles.homeBtn}
-        onPress={() => router.push('HomeScreen')}
+        onPress={() => router.push('/screens/HomeScreen')}
       >
         <Text style={styles.homeBtnText}>Quay lại trang chủ</Text>
       </TouchableOpacity>
