@@ -27,9 +27,16 @@ LLM_MODEL = genai.GenerativeModel("gemini-1.5-flash")
 
 app = Flask(__name__)
 # CORS cho web app (localhost:8081). Có thể thêm origin khác nếu cần.
+ALLOWED = [
+    "http://localhost:8081", "http://127.0.0.1:8081",
+    "http://localhost:19006", "http://127.0.0.1:19006",   # Expo Web
+    "http://localhost:19000", "http://127.0.0.1:19000",   # Expo dev server
+    "http://localhost:3000",  "http://127.0.0.1:3000",    # CRA/Vite
+]
 CORS(app, resources={
-    r"/label/*": {"origins": ["http://localhost:8081", "http://127.0.0.1:8081"]},
-    r"/advice":  {"origins": ["http://localhost:8081", "http://127.0.0.1:8081"]},
+    r"/label/*": {"origins": ALLOWED},
+    r"/advice":  {"origins": ALLOWED},
+    r"/chat":    {"origins": ALLOWED},                    # <— THÊM DÒNG NÀY
 })
 
 # ==== Schema hint ====
@@ -246,6 +253,108 @@ def advice():
         return jsonify(ok=False, error=f"Gemini error: {type(e).__name__}: {e}"), 502
 
     return jsonify(ok=True, advice_markdown=md)
+
+# ==== Chatbot: tư vấn theo hồ sơ + nhãn ====
+from collections import defaultdict
+import uuid
+
+# Bộ nhớ hội thoại đơn giản (RAM) + lưu ra file
+CHAT_HIST = defaultdict(list)  # {chat_id: [{"role":"user|assistant","text":"...","ts":"..."}]}
+MAX_TURNS = 12                 # chỉ giữ ~12 lượt gần nhất cho prompt
+
+SHOPPER_ASSISTANT_SYSTEM = """
+Bạn là HealthScan AI, trợ lý dinh dưỡng cho người hay mua thực phẩm đóng gói tại siêu thị.
+Nguyên tắc:
+- Trả lời NGẮN GỌN, tiếng Việt, dạng Markdown rõ ràng (tiêu đề, bullet).
+- Ưu tiên CÁ NHÂN HÓA: dựa vào hồ sơ sức khỏe (tuổi/giới, BMI, dị ứng, bệnh nền, mục tiêu).
+- Dựa trên NHÃN SẢN PHẨM (Thành phần + Giá trị dinh dưỡng) nếu có.
+- Tập trung câu hỏi thực dụng của người mua sắm: an toàn? phù hợp cho trẻ nhỏ/người già/thai phụ? tần suất khuyến nghị? khẩu phần? dị ứng/đường/muối/chất béo bão hòa cao? phụ gia cần lưu ý?
+- Nếu thiếu dữ liệu, nêu giả định hợp lý và hướng dẫn người dùng cách bổ sung (chụp bảng thành phần rõ nét).
+- Không đưa ra chẩn đoán y khoa. Có thể kèm khuyến cáo tham khảo bác sĩ nếu có bệnh nền nặng.
+
+Quy tắc nhanh:
+- Nếu đường > ~10–12 g/khẩu phần => khuyên “hạn chế tần suất”, gợi ý thay thế ít đường.
+- Nếu natri > ~300–400 mg/khẩu phần => cảnh báo “mặn”, khuyên người tăng huyết áp thận trọng.
+- Nếu trùng dị ứng trong hồ sơ => đánh dấu **TRÁNH**.
+- Trẻ <6 tuổi: ưu tiên cảnh báo đường/phụ gia; Người tiểu đường: đường/Carb; Tăng huyết áp: natri.
+
+Cấu trúc trả lời:
+1) **Tóm tắt sản phẩm**
+2) **Cảnh báo & lưu ý cá nhân hóa**
+3) **Gợi ý sử dụng** (khẩu phần/tần suất; đối tượng phù hợp/né tránh; gợi ý thay thế)
+4) **Kết luận**: OK / Dùng có kiểm soát / Tránh
+"""
+
+
+def _format_history_for_prompt(hist):
+    """Ghép ~N lượt gần nhất thành văn bản làm ngữ cảnh."""
+    lines = []
+    for h in hist[-MAX_TURNS:]:
+        who = "Người dùng" if h["role"] == "user" else "Assistant"
+        lines.append(f"{who}: {h['text']}")
+    return "\n".join(lines)
+
+@app.post("/chat")
+def chat():
+    """
+    Body JSON:
+    {
+      "message": "câu hỏi...",
+      "profile": {...}        # (tùy chọn) object từ profileStorage.getProfile()
+      "label": {...}          # (tùy chọn) object 'label' nhận từ /label/analyze
+      "chat_id": "abc123",    # (tùy chọn) để nối tiếp hội thoại
+      "reset": false          # (tùy chọn) xóa lịch sử hội thoại chat_id
+    }
+    """
+    body = request.get_json(silent=True) or {}
+    message = (body.get("message") or "").strip()
+    profile = body.get("profile") or {}
+    label = body.get("label") or {}
+    reset = bool(body.get("reset"))
+    chat_id = body.get("chat_id") or uuid.uuid4().hex
+
+    if not message:
+        return jsonify(ok=False, error="Missing 'message'"), 400
+
+    if reset:
+        CHAT_HIST.pop(chat_id, None)
+
+    # Lưu lượt hỏi của user
+    CHAT_HIST[chat_id].append({"role": "user", "text": message, "ts": datetime.utcnow().isoformat()})
+
+    # Gộp ngữ cảnh
+    context_blocks = [
+        {"text": SHOPPER_ASSISTANT_SYSTEM},
+        {"text": "== HỒ SƠ SỨC KHỎE (nếu có) =="},
+        {"text": json.dumps(profile, ensure_ascii=False)},
+        {"text": "== NHÃN SẢN PHẨM (nếu có) =="},
+        {"text": json.dumps(label, ensure_ascii=False)},
+        {"text": "== HỘI THOẠI GẦN NHẤT =="},
+        {"text": _format_history_for_prompt(CHAT_HIST[chat_id])},
+        {"text": f"== CÂU HỎI HIỆN TẠI ==\n{message}"},
+    ]
+
+    try:
+        result = LLM_MODEL.generate_content(context_blocks)
+        reply = (result.text or "").strip()
+    except Exception as e:
+        return jsonify(ok=False, error=f"Gemini error: {type(e).__name__}: {e}"), 502
+
+    # Lưu lượt trả lời
+    CHAT_HIST[chat_id].append({"role": "assistant", "text": reply, "ts": datetime.utcnow().isoformat()})
+
+    # Ghi log hội thoại ra file (để debug/tiện theo dõi)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    chat_dump = {
+        "chat_id": chat_id,
+        "updated_at": datetime.utcnow().isoformat(),
+        "history": CHAT_HIST[chat_id][-MAX_TURNS:],   # chỉ lưu gần nhất cho gọn
+    }
+    with open(OUT_DIR / f"chat_{chat_id}.json", "w", encoding="utf-8") as fp:
+        json.dump(chat_dump, fp, ensure_ascii=False, indent=2)
+
+    return jsonify(ok=True, chat_id=chat_id, reply_markdown=reply)
+
 
 # ==== Run ====
 if __name__ == "__main__":

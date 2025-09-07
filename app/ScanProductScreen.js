@@ -21,6 +21,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import AsyncStorage from '@react-native-async-storage/async-storage'; // <== NEW
 import CameraScannerService from '../services/CameraScannerService';
 
 // ---------------- API base resolver (no process.env needed) ----------------
@@ -73,17 +74,14 @@ export default function ScanProductScreen() {
       alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       quality: 1,
     });
-
     if (!result.canceled && result.assets?.length) {
       const uri = result.assets[0].uri;
       setUploadUri(uri);
-      // Không điều hướng ngay — bấm "Phân tích ảnh này" để gọi API
     }
   };
 
@@ -105,7 +103,6 @@ export default function ScanProductScreen() {
   };
 
   const stopScan = () => setIsScanning(false);
-
   const onBarCodeScanned = ({ type, data }) => {
     setIsScanning(false);
     setLastBarcode(data);
@@ -131,41 +128,36 @@ export default function ScanProductScreen() {
       const type = inferMimeFromName(name);
 
       const form = new FormData();
-
       if (Platform.OS === 'web') {
-        // Web: cần Blob/File thật sự để Flask thấy trong request.files
-        // Với blob:/data: URL có thể fetch để lấy blob
         const respBlob = await fetch(uri);
         const blob = await respBlob.blob();
         const file = new File([blob], name, { type: blob.type || type });
         form.append('image', file);
       } else {
-        // Android/iOS: RN hỗ trợ { uri, name, type }
         form.append('image', { uri, name, type });
       }
 
-      const resp = await fetch(`${API_BASE}/label/analyze`, {
-        method: 'POST',
-        body: form, // KHÔNG set Content-Type cho multipart
-      });
-
+      const resp = await fetch(`${API_BASE}/label/analyze`, { method: 'POST', body: form });
       let data;
       try {
         data = await resp.json();
       } catch (e) {
-        throw new Error(
-          `Server trả về không phải JSON (status ${resp.status}).` +
-            (Platform.OS === 'web'
-              ? '\nGợi ý: kiểm tra CORS trên Flask (flask-cors).'
-              : '')
-        );
+        throw new Error(`Server trả về không phải JSON (status ${resp.status}).` + (Platform.OS === 'web' ? '\nGợi ý: kiểm tra CORS trên Flask (flask-cors).' : ''));
       }
-
       if (!resp.ok || data?.ok === false) {
         throw new Error(data?.error || `Lỗi server (status ${resp.status}).`);
       }
 
       const label = data.label || null;
+
+      // === NEW: lưu nhãn quét gần nhất cho Chatbot ===
+      try {
+        await AsyncStorage.setItem('last_scan_label', JSON.stringify(label));
+      } catch (e) {
+        console.warn('[ScanProduct] Lưu last_scan_label thất bại:', e);
+      }
+
+      // Điều hướng sang màn phân tích chi tiết (giữ nguyên)
       router.push({
         pathname: '/ProductAnalysisScreen',
         params: {
@@ -203,7 +195,6 @@ export default function ScanProductScreen() {
             )}
           </>
         );
-
       case TAB_KEYS.UPLOAD:
         return (
           <>
@@ -212,17 +203,14 @@ export default function ScanProductScreen() {
             ) : (
               <MaterialIcons name="file-upload" size={60} color="#198754" style={styles.icon} />
             )}
-
             <Text style={styles.contentTitle}>{uploadUri ? 'Xem trước ảnh đã chọn' : 'Tải Ảnh Lên'}</Text>
             <Text style={styles.contentSubtitle}>
               {uploadUri ? 'Ảnh đã chọn từ thư viện' : 'Chọn ảnh nhãn thành phần từ thư viện'}
             </Text>
-
             <TouchableOpacity style={styles.primaryBtn} onPress={pickFromLibrary}>
               <MaterialIcons name="file-upload" size={20} color="#fff" />
               <Text style={styles.primaryBtnText}>{uploadUri ? 'Chọn lại ảnh' : 'Chọn Ảnh'}</Text>
             </TouchableOpacity>
-
             {uploadUri && (
               <TouchableOpacity style={[styles.primaryBtn, { marginTop: 12 }]} onPress={() => analyzeImage(uploadUri)}>
                 <MaterialIcons name="analytics" size={20} color="#fff" />
@@ -231,7 +219,6 @@ export default function ScanProductScreen() {
             )}
           </>
         );
-
       case TAB_KEYS.BARCODE:
         return (
           <>
@@ -241,21 +228,7 @@ export default function ScanProductScreen() {
                   style={StyleSheet.absoluteFillObject}
                   facing="back"
                   barcodeScannerSettings={{
-                    barcodeTypes: [
-                      'qr',
-                      'ean8',
-                      'ean13',
-                      'code39',
-                      'code93',
-                      'code128',
-                      'upc_a',
-                      'upc_e',
-                      'pdf417',
-                      'aztec',
-                      'datamatrix',
-                      'itf14',
-                      'codabar',
-                    ],
+                    barcodeTypes: ['qr','ean8','ean13','code39','code93','code128','upc_a','upc_e','pdf417','aztec','datamatrix','itf14','codabar'],
                   }}
                   onBarcodeScanned={({ data, type }) => onBarCodeScanned({ data, type })}
                 />
@@ -269,7 +242,6 @@ export default function ScanProductScreen() {
                 <FontAwesome name="barcode" size={60} color="#198754" style={styles.icon} />
                 <Text style={styles.contentTitle}>Quét Mã Vạch</Text>
                 <Text style={styles.contentSubtitle}>Hướng camera vào mã vạch sản phẩm</Text>
-
                 {lastBarcode ? (
                   <>
                     <Text style={{ color: '#0a0a0a', marginBottom: 10 }}>
@@ -277,19 +249,13 @@ export default function ScanProductScreen() {
                     </Text>
                     <TouchableOpacity
                       style={[styles.primaryBtn, { marginBottom: 10 }]}
-                      onPress={() =>
-                        router.push({
-                          pathname: '/ProductAnalysisScreen',
-                          params: { barcode: lastBarcode },
-                        })
-                      }
+                      onPress={() => router.push({ pathname: '/ProductAnalysisScreen', params: { barcode: lastBarcode } })}
                     >
                       <MaterialIcons name="analytics" size={20} color="#fff" />
                       <Text style={styles.primaryBtnText}>Phân tích theo mã này</Text>
                     </TouchableOpacity>
                   </>
                 ) : null}
-
                 <TouchableOpacity style={styles.primaryBtn} onPress={startScan}>
                   <FontAwesome name="barcode" size={20} color="#fff" />
                   <Text style={styles.primaryBtnText}>
@@ -300,26 +266,19 @@ export default function ScanProductScreen() {
             )}
           </>
         );
-
       case TAB_KEYS.SEARCH:
         return (
           <>
             <Ionicons name="search" size={60} color="#198754" style={styles.icon} />
             <Text style={styles.contentTitle}>Tìm Kiếm Sản Phẩm</Text>
             <Text style={styles.contentSubtitle}>Nhập tên sản phẩm để tra cứu thông tin</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ví dụ: Coca Cola…"
-              value={searchText}
-              onChangeText={setSearchText}
-            />
+            <TextInput style={styles.input} placeholder="Ví dụ: Coca Cola…" value={searchText} onChangeText={setSearchText} />
             <TouchableOpacity style={styles.primaryBtn} onPress={() => alert(`Tìm: ${searchText}`)}>
               <Ionicons name="search" size={20} color="#fff" />
               <Text style={styles.primaryBtnText}>Tìm Kiếm</Text>
             </TouchableOpacity>
           </>
         );
-
       default:
         return null;
     }
@@ -408,7 +367,6 @@ if (typeof __DEV__ !== 'undefined' && __DEV__) {
       { name: 'API_BASE typeof', got: typeof API_BASE, exp: 'string' },
     ];
     const ok = t.every((x) => x.got === x.exp);
-    // eslint-disable-next-line no-console
     console.log('[ScanProductScreen checks]', t, ok ? '✓' : '✗', 'API_BASE =', API_BASE);
   })();
 }
