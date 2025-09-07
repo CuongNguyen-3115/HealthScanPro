@@ -1,0 +1,162 @@
+{
+  "language": "vi",
+  "ingredients_raw": "BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA",
+  "ingredients": [
+    {
+      "name": "Bột mì",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    },
+    {
+      "name": "Đường",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Mạch nha glucose",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Shortening thực vật",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "có chất nhũ hoá (471)"
+    },
+    {
+      "name": "Chất béo thực vật",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "có chất nhũ hoá (492, 322(i))"
+    },
+    {
+      "name": "Bột cacao",
+      "percentage": "2,8%",
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Sữa bột nguyên kem",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    },
+    {
+      "name": "Trứng",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    },
+    {
+      "name": "Chất tạo xốp",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(500(ii), 503(ii))"
+    },
+    {
+      "name": "Đường dextrose",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Gelatin",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Muối",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Hỗn hợp bột cacao và bơ cacao",
+      "percentage": "0,2%",
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Chất ổn định",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(1442, 415)"
+    },
+    {
+      "name": "Chất điều chỉnh độ acid",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(341(i))"
+    },
+    {
+      "name": "Hương liệu tổng hợp (vani)",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Chất nhũ hoá",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(322(i), 476)"
+    },
+    {
+      "name": "Muối i-ốt",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Protein sữa",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    }
+  ],
+  "nutrition_facts": {
+    "serving_size": "36,3 g",
+    "servings_per_container": "2",
+    "calories": "160 kcal",
+    "nutrients": [
+      {
+        "name": "Chất béo",
+        "amount": "6",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Natri",
+        "amount": "110",
+        "unit": "mg",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Carbohydrat",
+        "amount": "24",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Đường tổng số",
+        "amount": "12",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Chất đạm",
+        "amount": "2",
+        "unit": "g",
+        "daily_value_percent": null
+      }
+    ]
+  },
+  "warnings": [
+    "có gluten",
+    "có sữa",
+    "có trứng"
+  ]
+}
