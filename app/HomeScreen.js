@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
 import {
   Dimensions,
   Image,
@@ -59,6 +58,22 @@ export default function index() {
               >
               <FontAwesome5 name="search" size={18} color="white" />
               <Text style={styles.buttonText}>Tiếp Tục Quét Sản Phẩm</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.card}>
+             <View style={styles.cardHeader}>
+              <Image source={require('../assets/images/analysis.png')} style={styles.cardIconLarge} />
+              <Text style={styles.cardTitle}>ChatBot AI</Text>
+             </View>
+             <Text style={styles.cardDescription}>
+              Trò chuyện trực tiếp với trợ lý AI để phân tích và tư vấn sức khỏe/sản phẩm.
+             </Text>
+             <TouchableOpacity
+              style={styles.buttonTeal}
+              onPress={() => router.push('ChatBotScreen')} // ✅ trỏ tới file ChatBotScreen.js
+              >
+              <FontAwesome5 name="robot" size={18} color="white" />
+              <Text style={styles.buttonText}>Bắt đầu Chat với AI</Text>
             </TouchableOpacity>
           </View>
 
@@ -151,4 +166,18 @@ const styles = StyleSheet.create({
   footerItem: { flex: 1, alignItems: 'center' },
   footerIcon: { width: 48, height: 48, marginBottom: 4 },
   footerText: { fontSize: 11, color: 'black', textAlign: 'center' },
+
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  title: { fontSize: 22, fontWeight: "bold" },
+  button: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });

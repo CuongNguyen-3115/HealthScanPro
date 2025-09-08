@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ChatBot 🤖</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    h1 { font-size: 32px; }
+    #chat-box { width: 400px; margin: 20px auto; border: 1px solid #ccc; padding: 10px; text-align: left; height: 300px; overflow-y: auto; }
+    input { width: 70%; padding: 8px; }
+    button { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>AI ChatBot 🤖</h1>
+  <div id="chat-box"></div>
+  <input type="text" id="user-input" placeholder="Nhập tin nhắn..."/>
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const userMessage = input.value;
+      if (!userMessage) return;
+
+      chatBox.innerHTML += `<p><b>Bạn:</b> ${userMessage}</p>`;
+      input.value = "";
+
+      const res = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage })
+      });
+      const data = await res.json();
+
+      chatBox.innerHTML += `<p><b>Bot:</b> ${data.reply}</p>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
