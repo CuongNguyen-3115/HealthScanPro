@@ -22,21 +22,21 @@ if not API_KEY:
 
 # ==== Gemini config ====
 genai.configure(api_key=API_KEY)
-VLM_MODEL = genai.GenerativeModel("gemini-1.5-flash")
-LLM_MODEL = genai.GenerativeModel("gemini-1.5-flash")
+VLM_MODEL = genai.GenerativeModel("gemini-1.5-flash")   # đọc nhãn từ ảnh
+LLM_MODEL = genai.GenerativeModel("gemini-1.5-flash")     # tư vấn/llm tổng quát → reasoning tốt hơn
 
 app = Flask(__name__)
-# CORS cho web app (localhost:8081). Có thể thêm origin khác nếu cần.
+# CORS
 ALLOWED = [
     "http://localhost:8081", "http://127.0.0.1:8081",
-    "http://localhost:19006", "http://127.0.0.1:19006",   # Expo Web
-    "http://localhost:19000", "http://127.0.0.1:19000",   # Expo dev server
-    "http://localhost:3000",  "http://127.0.0.1:3000",    # CRA/Vite
+    "http://localhost:19006", "http://127.0.0.1:19006",
+    "http://localhost:19000", "http://127.0.0.1:19000",
+    "http://localhost:3000",  "http://127.0.0.1:3000",
 ]
 CORS(app, resources={
     r"/label/*": {"origins": ALLOWED},
     r"/advice":  {"origins": ALLOWED},
-    r"/chat":    {"origins": ALLOWED},                    # <— THÊM DÒNG NÀY
+    r"/chat":    {"origins": ALLOWED},
 })
 
 # ==== Schema hint ====
@@ -100,8 +100,9 @@ def _detect_mime(img_bytes: bytes, fallback: str = "image/jpeg") -> str:
         return fallback
 
 def _human_text_from_label(label: dict) -> str:
+    # dùng cho file txt lưu debug
     lines = []
-    lines.append("=== THÔNG TIN NHÃN TRÍCH XUẤT ===")
+    lines.append("THÔNG TIN NHÃN TRÍCH XUẤT")
     lines.append(f"Ngôn ngữ: {label.get('language','')}")
     lines.append("")
     lines.append("— THÀNH PHẦN (raw) —")
@@ -113,7 +114,7 @@ def _human_text_from_label(label: dict) -> str:
         pct = f" ({it.get('percentage')}%)" if it.get("percentage") is not None else ""
         allerg = " [ALLERGEN]" if it.get("is_allergen") else ""
         notes = f" — {it.get('notes')}" if it.get("notes") else ""
-        lines.append(f"• {name}{pct}{allerg}{notes}")
+        lines.append(f"- {name}{pct}{allerg}{notes}")
     lines.append("")
     nf = label.get("nutrition_facts", {}) or {}
     lines.append("— GIÁ TRỊ DINH DƯỠNG —")
@@ -125,24 +126,162 @@ def _human_text_from_label(label: dict) -> str:
         amount = n.get("amount","")
         unit = n.get("unit","")
         dv = f" ({n.get('daily_value_percent')})" if n.get("daily_value_percent") else ""
-        lines.append(f"• {name}: {amount} {unit}{dv}".strip())
+        lines.append(f"- {name}: {amount} {unit}{dv}".strip())
     lines.append("")
     warns = label.get("warnings", []) or []
     lines.append("— CẢNH BÁO —")
     if warns:
-        for w in warns: lines.append(f"• {w}")
+        for w in warns: lines.append(f"- {w}")
     else:
         lines.append("-")
     return "\n".join(lines)
 
+# ---------- UI render helpers (tiếng Việt, không dùng #/* cho bullet) ----------
+def _bar(value, max_value, width=16):
+    try:
+        v = float(str(value).replace(",", "."))
+        m = float(str(max_value).replace(",", "."))
+        ratio = max(0.0, min(1.0, v / m))
+    except Exception:
+        return ""
+    filled = int(round(ratio * width))
+    return "█" * filled + "░" * (width - filled)
+
+def _list_join(x):
+    if not x: return ""
+    if isinstance(x, (list, tuple)):
+        return ", ".join(str(i) for i in x if str(i).strip())
+    return str(x)
+
+def _render_profile_md(profile: dict) -> str:
+    if not profile:
+        return "Hồ sơ sức khỏe: Chưa có dữ liệu. Vào mục **Hồ sơ** để cập nhật."
+    # dự đoán cấu trúc
+    basic = profile.get("basic") or {}
+    conditions = profile.get("conditions") or {}
+    allergies = profile.get("allergies") or []
+    goals = profile.get("goals") or {}
+    updated = profile.get("updatedAt") or profile.get("updated_at") or "-"
+
+    age = basic.get("age") or "-"
+    gender = basic.get("genderLabel") or basic.get("gender_vi") or basic.get("gender") or "-"
+    weight = basic.get("weight") or "-"
+    height = basic.get("height") or "-"
+    activity = basic.get("activityLevel") or basic.get("activity") or "-"
+
+    cond_list = []
+    sel = conditions.get("selected")
+    if isinstance(sel, list): cond_list += sel
+    other = conditions.get("other")
+    if isinstance(other, list): cond_list += other
+    if isinstance(other, str): cond_list.append(other)
+
+    goal_list = []
+    gsel = goals.get("selected")
+    if isinstance(gsel, list): goal_list += gsel
+    note = goals.get("note")
+    if note: goal_list.append(note)
+
+    lines = []
+    lines.append("Hồ sơ sức khỏe của bạn")
+    lines.append(f"- Cập nhật: {updated}")
+    lines.append("1. Thông tin cơ bản:")
+    lines.append(f"   - Tuổi: {age}")
+    lines.append(f"   - Giới tính: {gender}")
+    lines.append(f"   - Cân nặng: {weight} kg")
+    lines.append(f"   - Chiều cao: {height} cm")
+    lines.append(f"   - Mức vận động: {activity}")
+    lines.append("2. Tình trạng/bệnh nền:")
+    lines.append(f"   - {_list_join(cond_list) or 'Chưa ghi nhận'}")
+    lines.append("3. Dị ứng:")
+    lines.append(f"   - {_list_join(allergies) or 'Chưa ghi nhận'}")
+    lines.append("4. Mục tiêu sức khỏe:")
+    lines.append(f"   - {_list_join(goal_list) or 'Chưa thiết lập'}")
+    return "\n".join(lines)
+
+def _render_ingredients_md(label: dict) -> str:
+    if not label:
+        return "Thành phần: Chưa có nhãn đã quét. Vào **Quét sản phẩm** để chụp nhãn."
+    ings = label.get("ingredients") or []
+    raw = label.get("ingredients_raw") or ""
+    lines = []
+    lines.append("Thành phần (từ nhãn)")
+    if raw:
+        lines += [f"- Nguyên văn: {raw.strip()}", ""]
+    if ings:
+        lines.append("Danh sách parse:")
+        for it in ings:
+            name = it.get("name","?")
+            pct = f" ({it.get('percentage')}%)" if it.get("percentage") is not None else ""
+            allerg = " — [ALLERGEN]" if it.get("is_allergen") else ""
+            notes = f" — {it.get('notes')}" if it.get("notes") else ""
+            lines.append(f"- {name}{pct}{allerg}{notes}")
+    return "\n".join(lines)
+
+def _render_nutrition_md(label: dict) -> str:
+    if not label:
+        return "Giá trị dinh dưỡng: Chưa có nhãn đã quét."
+    nf = (label.get("nutrition_facts") or {})
+    rows = []
+    rows.append("Giá trị dinh dưỡng (mỗi khẩu phần)")
+    rows.append(f"- Khẩu phần: {nf.get('serving_size','-')}")
+    rows.append(f"- Số khẩu phần/hộp: {nf.get('servings_per_container','-')}")
+    rows.append(f"- Năng lượng: {nf.get('calories','-')}")
+    rows.append("")
+    rows.append("Bảng tóm tắt:")
+    rows.append("| Chỉ tiêu | Lượng | %DV |")
+    rows.append("|---|---:|---:|")
+    for n in nf.get("nutrients", []) or []:
+        rows.append(f"| {n.get('name','?')} | {n.get('amount','')} {n.get('unit','')} | {n.get('daily_value_percent','') or ''} |")
+    # mini chart
+    sugar = next((n for n in nf.get("nutrients", []) if str(n.get("name","")).lower() in ("sugars","đường")), None)
+    sodium = next((n for n in nf.get("nutrients", []) if str(n.get("name","")).lower() in ("sodium","natri")), None)
+    satfat = next((n for n in nf.get("nutrients", []) if "saturated" in str(n.get("name","")).lower() or "bão" in str(n.get("name","")).lower()), None)
+    rows += ["", "Minh hoạ nhanh:"]
+    if sugar:
+        rows.append(f"- Đường: `{_bar(sugar.get('amount',0), 12)}` {sugar.get('amount','?')}{sugar.get('unit','')} / mốc ~12 g/khẩu phần")
+    if sodium:
+        rows.append(f"- Natri: `{_bar(sodium.get('amount',0), 400)}` {sodium.get('amount','?')}{sodium.get('unit','')} / mốc ~400 mg/khẩu phần")
+    if satfat:
+        rows.append(f"- Bão hoà: `{_bar(satfat.get('amount',0), 5)}` {satfat.get('amount','?')}{satfat.get('unit','')} / mốc ~5 g/khẩu phần")
+    return "\n".join(rows)
+
+def _render_label_all_md(label: dict) -> str:
+    parts = [_render_ingredients_md(label), "", _render_nutrition_md(label)]
+    return "\n".join(p for p in parts if p)
+
+# --- intent detector: chỉ kích hoạt khi người dùng RÕ RÀNG yêu cầu "xem/hiển thị" ---
+_PROF_RE = re.compile(r"\b(xem|hiển\s*thị|mở|cho\s*tôi\s*xem)\b.*\b(hồ\s*sơ|profile)\b", re.I)
+_ING_RE  = re.compile(r"\b(xem|hiển\s*thị|mở)\b.*\b(thành\s*phần|ingredients?|nhãn|label)\b", re.I)
+_NUT_RE  = re.compile(r"\b(xem|hiển\s*thị|mở)\b.*\b(giá\s*trị\s*dinh\s*dưỡng|nutrition)\b", re.I)
+# Các từ khoá loại trừ (để không vô tình show label/profile khi câu hỏi phân tích)
+_EXCLUDE = ("gây dị ứng", "đánh giá", "phù hợp", "an toàn", "tốt hơn", "bao nhiêu", "tần suất", "so sánh")
+
+def _detect_intent(msg: str):
+    t = (msg or "").lower().strip()
+    if not t: return None
+    if any(k in t for k in _EXCLUDE):
+        return None
+    if _PROF_RE.search(t): return "SHOW_PROFILE"
+    if _ING_RE.search(t):  return "SHOW_INGREDIENTS"
+    if _NUT_RE.search(t):  return "SHOW_NUTRITION"
+    return None
+
+def _normalize_md(text: str) -> str:
+    """Xoá heading markdown (#) và chuyển bullet * / • thành '-' để gọn mắt."""
+    out = []
+    for line in (text or "").splitlines():
+        l = re.sub(r'^\s*#{1,6}\s*', '', line)     # bỏ heading '#'
+        l = re.sub(r'^\s*[*•]\s+', '- ', l)        # đổi */• thành '- '
+        out.append(l)
+    return "\n".join(out)
+
+# ==== API: /label/analyze ====
 def _read_image_from_request():
-    """Trả về (img_bytes, filename, source) từ multipart hoặc JSON base64."""
     print("CT:", request.content_type)
     print("FILES:", list(request.files.keys()))
     data = request.get_json(silent=True) or {}
     print("JSON keys:", list(data.keys()))
-
-    # 1) multipart/form-data
     if request.content_type and "multipart/form-data" in request.content_type:
         f = request.files.get("image") or request.files.get("file")
         if not f or f.filename == "":
@@ -150,8 +289,6 @@ def _read_image_from_request():
         img_bytes = f.read()
         filename = f.filename
         return img_bytes, filename, "multipart", None
-
-    # 2) JSON base64: { image_base64: "data:...;base64,...." }
     b64 = data.get("image_base64") or data.get("image") or ""
     if b64:
         if b64.startswith("data:"):
@@ -161,65 +298,47 @@ def _read_image_from_request():
             return img_bytes, "upload.png", "base64", None
         except Exception as e:
             return None, None, None, f"invalid base64: {e}"
-
     return None, None, None, "missing image"
 
-# ==== API: /label/analyze ====
 @app.post("/label/analyze")
 def analyze_label():
     img_bytes, filename, source, err = _read_image_from_request()
     if err:
         return jsonify(ok=False, error=err), 400
-
-    # MIME ưu tiên: Flask -> theo tên -> đoán bytes
     f_mime = (mimetypes.guess_type(filename or "")[0] or "").lower()
     mime = _detect_mime(img_bytes, f_mime or "image/jpeg")
-
-    print(f"[analyze_label] source={source} file={filename} mime={mime}", flush=True)
-
-    # Gemini prompt
     prompt = (
         "Đọc nhãn thực phẩm trong ảnh (tiếng Việt nếu có). "
         "Trích xuất Thành phần và Giá trị dinh dưỡng theo schema bên dưới.\n" + SCHEMA_HINT
     )
-
     parts = [
         {"text": prompt},
         {"inline_data": {"mime_type": mime, "data": img_bytes}},
     ]
-
     try:
         result = VLM_MODEL.generate_content(parts)
         text = result.text or ""
     except Exception as e:
         return jsonify(ok=False, error=f"Gemini error: {type(e).__name__}: {e}"), 502
-
     try:
         label = _extract_json(text)
     except Exception as e:
         return jsonify(ok=False, error=f"Parse JSON failed: {e}", raw=text[:5000]), 500
 
-    # Bổ sung field tối thiểu cho client
     label.setdefault("ingredients", [])
     label.setdefault("nutrition_facts", {}).setdefault("nutrients", [])
     label.setdefault("warnings", [])
 
-    # Lưu file
     ts = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     base_stem = Path(secure_filename(filename or "upload")).stem or "upload"
     prefix = f"{ts}_{base_stem}"
-
     json_path = OUT_DIR / f"{prefix}.json"
     txt_path  = OUT_DIR / f"{prefix}.txt"
-
     with open(json_path, "w", encoding="utf-8") as fp:
         json.dump(label, fp, ensure_ascii=False, indent=2)
     with open(txt_path, "w", encoding="utf-8") as fp:
         fp.write(_human_text_from_label(label))
 
-    print(f"[analyze_label] saved -> {json_path.name}, {txt_path.name}", flush=True)
-
-    # Trả về đúng định dạng client mong đợi
     return jsonify(
         ok=True,
         label=label,
@@ -227,7 +346,7 @@ def analyze_label():
         meta={"source": source, "filename": filename, "mime": mime},
     )
 
-# ==== API: /advice ====
+# ==== API: /advice (giữ lại cho dễ test) ====
 @app.post("/advice")
 def advice():
     body = request.get_json(silent=True) or {}
@@ -235,59 +354,57 @@ def advice():
     label = body.get("label")
     if not profile or not label:
         return jsonify(ok=False, error="Missing profile or label"), 400
-
     system = (
         "Bạn là chuyên gia dinh dưỡng. Dựa trên hồ sơ sức khỏe và dữ liệu nhãn (thành phần + dinh dưỡng), "
-        "hãy trả lời ngắn gọn, có cấu trúc Markdown:\n"
-        "1) Tóm tắt sản phẩm\n"
-        "2) Điểm cần lưu ý/cảnh báo (dị ứng, đường, muối, chất béo bão hòa, phụ gia)\n"
-        "3) Lời khuyên cá nhân hóa\n"
-        "4) Kết luận: OK / Dùng có kiểm soát / Tránh"
+        "trả lời ngắn gọn, rõ ràng, không dùng heading '#', bullet '*'. Dùng tiêu đề in đậm, gạch đầu dòng '-' và liệt kê theo số."
     )
     user = f"Hồ sơ: {json.dumps(profile, ensure_ascii=False)}\n\nNhãn: {json.dumps(label, ensure_ascii=False)}"
-
     try:
         result = LLM_MODEL.generate_content([{"text": system}, {"text": user}])
-        md = (result.text or "").strip()
+        md = _normalize_md((result.text or "").strip())
     except Exception as e:
         return jsonify(ok=False, error=f"Gemini error: {type(e).__name__}: {e}"), 502
-
     return jsonify(ok=True, advice_markdown=md)
 
-# ==== Chatbot: tư vấn theo hồ sơ + nhãn ====
+# ==== Chatbot ====
 from collections import defaultdict
 import uuid
 
-# Bộ nhớ hội thoại đơn giản (RAM) + lưu ra file
-CHAT_HIST = defaultdict(list)  # {chat_id: [{"role":"user|assistant","text":"...","ts":"..."}]}
-MAX_TURNS = 12                 # chỉ giữ ~12 lượt gần nhất cho prompt
+CHAT_HIST = defaultdict(list)
+MAX_TURNS = 12
 
 SHOPPER_ASSISTANT_SYSTEM = """
-Bạn là HealthScan AI, trợ lý dinh dưỡng cho người hay mua thực phẩm đóng gói tại siêu thị.
-Nguyên tắc:
-- Trả lời NGẮN GỌN, tiếng Việt, dạng Markdown rõ ràng (tiêu đề, bullet).
-- Ưu tiên CÁ NHÂN HÓA: dựa vào hồ sơ sức khỏe (tuổi/giới, BMI, dị ứng, bệnh nền, mục tiêu).
-- Dựa trên NHÃN SẢN PHẨM (Thành phần + Giá trị dinh dưỡng) nếu có.
-- Tập trung câu hỏi thực dụng của người mua sắm: an toàn? phù hợp cho trẻ nhỏ/người già/thai phụ? tần suất khuyến nghị? khẩu phần? dị ứng/đường/muối/chất béo bão hòa cao? phụ gia cần lưu ý?
-- Nếu thiếu dữ liệu, nêu giả định hợp lý và hướng dẫn người dùng cách bổ sung (chụp bảng thành phần rõ nét).
-- Không đưa ra chẩn đoán y khoa. Có thể kèm khuyến cáo tham khảo bác sĩ nếu có bệnh nền nặng.
+Bạn là HealthScan AI – chuyên gia dinh dưỡng lâm sàng & “coach” mua sắm siêu thị, đồng thời là trợ lý kiến thức tổng quát.
+Mục tiêu: trả lời ĐÚNG Ý CÂU HỎI trước, chính xác, ngắn gọn, không bịa. Ưu tiên dùng dữ liệu từ HỒ SƠ và NHÃN nếu liên quan.
 
-Quy tắc nhanh:
-- Nếu đường > ~10–12 g/khẩu phần => khuyên “hạn chế tần suất”, gợi ý thay thế ít đường.
-- Nếu natri > ~300–400 mg/khẩu phần => cảnh báo “mặn”, khuyên người tăng huyết áp thận trọng.
-- Nếu trùng dị ứng trong hồ sơ => đánh dấu **TRÁNH**.
-- Trẻ <6 tuổi: ưu tiên cảnh báo đường/phụ gia; Người tiểu đường: đường/Carb; Tăng huyết áp: natri.
+PHONG CÁCH & ĐỊNH DẠNG
+- Trả lời tiếng Việt. Không dùng heading '#' và bullet '*'.
+- Dùng tiêu đề in đậm, danh sách '-' và/hoặc liệt kê số 1., 2., 3.
+- Mở đầu bằng mục **Trả lời nhanh** (1–2 câu sát câu hỏi), sau đó tới các mục cần thiết. Tránh lan man.
+- Nếu thiếu dữ liệu quan trọng, nêu rõ “không có trong nhãn/hồ sơ” và đề xuất cách bổ sung.
+- Giọng điệu ấm áp, thực dụng (góc nhìn người nội trợ ở siêu thị). Không chẩn đoán y khoa.
 
-Cấu trúc trả lời:
-1) **Tóm tắt sản phẩm**
-2) **Cảnh báo & lưu ý cá nhân hóa**
-3) **Gợi ý sử dụng** (khẩu phần/tần suất; đối tượng phù hợp/né tránh; gợi ý thay thế)
-4) **Kết luận**: OK / Dùng có kiểm soát / Tránh
+CÁ NHÂN HÓA (khi có hồ sơ)
+- Dị ứng/không dung nạp: đối chiếu tên thành phần trên nhãn (gluten↔bột mì/lúa mạch; sữa↔whey/casein; trứng…).
+- Bệnh nền/mục tiêu: tiền/đái tháo đường → đường/Carb; tăng huyết áp → natri; giảm cân → năng lượng/đường/béo; tăng cơ → protein; tiêu hoá → chất xơ/phụ gia.
+- Ngưỡng tham khảo mềm (mỗi khẩu phần, chỉ để định hướng):
+  Đường > ~10–12 g → khuyên hạn chế; Natri > ~300–400 mg → cảnh báo mặn; Bão hoà ≥ ~5 g hoặc trans fat > 0 → không dùng thường xuyên.
+
+“CÓ SẢN PHẨM TỐT HƠN KHÔNG?”
+- Suy luận nhóm sản phẩm từ nhãn. Nếu không đủ, nói rõ.
+- Xuất **Tiêu chí chọn tốt hơn** (số liệu cụ thể: ví dụ đường <5 g/khẩu phần; natri <120 mg; không trans fat; ngũ cốc nguyên cám ≥51%…).
+- Đưa **Gợi ý thay thế cấp danh mục** (không nêu thương hiệu nếu không chắc) ví dụ: “bánh quy nguyên cám ít đường”, “ngũ cốc không thêm đường”.
+- Nếu cần thêm sở thích (vị, kết cấu, mức ngọt/mặn…), hỏi 1–2 câu ngắn.
+
+LƯU Ý Ý ĐỊNH
+- Chỉ hiển thị nguyên văn **Hồ sơ** hoặc **Thành phần/Giá trị dinh dưỡng** khi người dùng RÕ RÀNG yêu cầu “xem/hiển thị/mở…”.
+- Nếu câu hỏi chứa từ “hồ sơ/thành phần” nhưng là yêu cầu phân tích (VD: ‘thành phần nào gây dị ứng?’), hãy phân tích thay vì đổ dữ liệu thô.
+
+TRỢ LÝ TỔNG QUÁT
+- Nếu câu hỏi ngoài phạm vi dinh dưỡng/mua sắm, trả lời như một trợ lý kiến thức tổng quát. Không bịa thông tin thời sự.
 """
 
-
 def _format_history_for_prompt(hist):
-    """Ghép ~N lượt gần nhất thành văn bản làm ngữ cảnh."""
     lines = []
     for h in hist[-MAX_TURNS:]:
         who = "Người dùng" if h["role"] == "user" else "Assistant"
@@ -296,18 +413,8 @@ def _format_history_for_prompt(hist):
 
 @app.post("/chat")
 def chat():
-    """
-    Body JSON:
-    {
-      "message": "câu hỏi...",
-      "profile": {...}        # (tùy chọn) object từ profileStorage.getProfile()
-      "label": {...}          # (tùy chọn) object 'label' nhận từ /label/analyze
-      "chat_id": "abc123",    # (tùy chọn) để nối tiếp hội thoại
-      "reset": false          # (tùy chọn) xóa lịch sử hội thoại chat_id
-    }
-    """
     body = request.get_json(silent=True) or {}
-    message = (body.get("message") or "").strip()
+    message = (body.get("message") or "").trim() if hasattr(str, "trim") else (body.get("message") or "").strip()
     profile = body.get("profile") or {}
     label = body.get("label") or {}
     reset = bool(body.get("reset"))
@@ -315,46 +422,63 @@ def chat():
 
     if not message:
         return jsonify(ok=False, error="Missing 'message'"), 400
-
     if reset:
         CHAT_HIST.pop(chat_id, None)
 
-    # Lưu lượt hỏi của user
     CHAT_HIST[chat_id].append({"role": "user", "text": message, "ts": datetime.utcnow().isoformat()})
 
-    # Gộp ngữ cảnh
+    # Built-in intents (chỉ khi người dùng thật sự yêu cầu "xem")
+    intent = _detect_intent(message)
+    built_in_reply = None
+    if intent == "SHOW_PROFILE":
+        built_in_reply = _render_profile_md(profile)
+    elif intent == "SHOW_INGREDIENTS":
+        built_in_reply = _render_ingredients_md(label)
+    elif intent == "SHOW_NUTRITION":
+        built_in_reply = _render_nutrition_md(label)
+    elif intent == "SHOW_LABEL":
+        built_in_reply = _render_label_all_md(label)
+
+    if built_in_reply:
+        reply = built_in_reply
+        CHAT_HIST[chat_id].append({"role": "assistant", "text": reply, "ts": datetime.utcnow().isoformat()})
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        chat_dump = {"chat_id": chat_id, "updated_at": datetime.utcnow().isoformat(),
+                     "history": CHAT_HIST[chat_id][-MAX_TURNS:]}
+        with open(OUT_DIR / f"chat_{chat_id}.json", "w", encoding="utf-8") as fp:
+            json.dump(chat_dump, fp, ensure_ascii=False, indent=2)
+        return jsonify(ok=True, chat_id=chat_id, reply_markdown=reply)
+
+    # LLM
     context_blocks = [
         {"text": SHOPPER_ASSISTANT_SYSTEM},
-        {"text": "== HỒ SƠ SỨC KHỎE (nếu có) =="},
+        {"text": "HỒ SƠ SỨC KHỎE (JSON, nếu có):"},
         {"text": json.dumps(profile, ensure_ascii=False)},
-        {"text": "== NHÃN SẢN PHẨM (nếu có) =="},
+        {"text": "NHÃN SẢN PHẨM (JSON, nếu có):"},
         {"text": json.dumps(label, ensure_ascii=False)},
-        {"text": "== HỘI THOẠI GẦN NHẤT =="},
+        {"text": "HỘI THOẠI GẦN NHẤT:"},
         {"text": _format_history_for_prompt(CHAT_HIST[chat_id])},
-        {"text": f"== CÂU HỎI HIỆN TẠI ==\n{message}"},
+        {"text": f"CÂU HỎI HIỆN TẠI:\n{message}"},
     ]
-
     try:
         result = LLM_MODEL.generate_content(context_blocks)
-        reply = (result.text or "").strip()
+        reply_raw = (result.text or "").strip()
+        reply = _normalize_md(reply_raw)
     except Exception as e:
         return jsonify(ok=False, error=f"Gemini error: {type(e).__name__}: {e}"), 502
 
-    # Lưu lượt trả lời
     CHAT_HIST[chat_id].append({"role": "assistant", "text": reply, "ts": datetime.utcnow().isoformat()})
 
-    # Ghi log hội thoại ra file (để debug/tiện theo dõi)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     chat_dump = {
         "chat_id": chat_id,
         "updated_at": datetime.utcnow().isoformat(),
-        "history": CHAT_HIST[chat_id][-MAX_TURNS:],   # chỉ lưu gần nhất cho gọn
+        "history": CHAT_HIST[chat_id][-MAX_TURNS:],
     }
     with open(OUT_DIR / f"chat_{chat_id}.json", "w", encoding="utf-8") as fp:
         json.dump(chat_dump, fp, ensure_ascii=False, indent=2)
 
     return jsonify(ok=True, chat_id=chat_id, reply_markdown=reply)
-
 
 # ==== Run ====
 if __name__ == "__main__":
