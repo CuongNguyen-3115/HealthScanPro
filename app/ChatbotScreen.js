@@ -51,7 +51,6 @@ const COLOR = {
   textMuted: '#587164',
   tagGreen: '#0a8a3a',
 };
-const GUTTER = 12;
 
 const QUICK_CARD_WIDTH = 170;
 const QUICK_CARD_PH = 12;
@@ -63,7 +62,18 @@ const QUICK_CARD_BODY_FS = 12;
 const looksLikeTable = (txt = '') =>
   /\|.+\|\s*\n\|\-+/.test(txt) || /\|.+\|.+\|/.test(txt);
 
-/** Phiên chat: { id, title, updatedAt, messages:[{role,text,ts}], firstUser } */
+/** Parse ts về Date an toàn */
+function toValidDate(input) {
+  if (input instanceof Date) return input;
+  if (!input) return null;
+  const d = new Date(input);
+  return isNaN(d.getTime()) ? null : d;
+}
+function reviveMsgDates(msgs = []) {
+  return msgs.map(m => ({ ...m, ts: toValidDate(m.ts) || new Date() }));
+}
+
+/** Sessions */
 const SESSIONS_KEY = 'chat_sessions_v1';
 async function loadSessions() {
   try { const raw = await AsyncStorage.getItem(SESSIONS_KEY); return raw ? JSON.parse(raw) : []; }
@@ -77,17 +87,6 @@ function titleFromMessages(msgs) {
   if (!first) return 'Cuộc trò chuyện';
   const t = first.text.trim().replace(/\s+/g, ' ');
   return t.length > 50 ? t.slice(0, 50) + '…' : t;
-}
-
-// >>> Parse ts về Date an toàn
-function toValidDate(input) {
-  if (input instanceof Date) return input;
-  if (!input) return null;
-  const d = new Date(input);
-  return isNaN(d.getTime()) ? null : d;
-}
-function reviveMsgDates(msgs = []) {
-  return msgs.map(m => ({ ...m, ts: toValidDate(m.ts) || new Date() }));
 }
 
 /* ====== FAQ builder ====== */
@@ -106,6 +105,73 @@ function buildPersonalFAQ(profile) {
     { tag: 'THAY THẾ', q: 'Gợi ý lựa chọn lành mạnh hơn cùng nhóm sản phẩm.' },
   ];
 }
+
+/* ====== Lỗi dạng 3 dòng cho Gemini 429 ====== */
+function formatBackendError(s) {
+  const msg = String(s || '');
+  if (/Gemini.*429/i.test(msg) && /RuntimeError/i.test(msg)) {
+    return [
+      'Xin lỗi, có lỗi khi xử lý:',
+      'Gemini error: RuntimeError',
+      'Gemini 429: Hết quota Free Tier/đang quá tải. Hãy bật billing hoặc giảm tần suất gọi.',
+    ].join('\n');
+  }
+  return `Xin lỗi, có lỗi khi xử lý:\n${msg}`;
+}
+
+/* ====== Markdown giải thích (đã rút gọn để không tràn ngang) ====== */
+const HEALTH_INFO_MD = `
+**Điểm sức khỏe (cá nhân hoá) là gì?**
+
+- Thang **0–8** (8 là tốt nhất). Cá nhân hoá theo **hồ sơ** của bạn (tình trạng, mục tiêu).
+- Dùng để **so sánh nhanh** trong cùng nhóm khi mua sắm.
+
+**Cách tính (rút gọn / 100 g):**
+- Đường: ≤ **5 g** → **+2**; 5–8 g → **+1**; >8 g → **−1**
+- Natri: ≤ **120 mg** → **+2**; >400 mg → **−1**
+- Bão hoà: ≤ **3 g** → **+1**; >5 g → **−1**
+- Nếu mục tiêu **tăng cơ**: **Protein ≥10 g** → **+2**
+- Nếu mục tiêu **tiêu hoá/giảm cân**: **Chất xơ ≥5 g** → **+1**
+- Với **snack**: năng lượng > **480 kcal/100 g** → **−1**
+
+**Đọc điểm:**
+- **≥ 6.5**  → *Phù hợp*
+- **4.0–6.4** → *Cần cân nhắc*
+- **1.0–3.9** → *Hạn chế*
+- **< 1.0**   → *Tránh* (đặc biệt nếu có **trans fat** hoặc **dị ứng**)
+
+**Ví dụ:** Mì khô 100 g: đường 3.5 g (+2), natri 90 mg (+2), bão hoà 1.2 g (+1), protein 11 g (+2 nếu tăng cơ), xơ 2 g (0), năng lượng 300 kcal (0) → **7/8** (*Phù hợp*).
+
+*Lưu ý: thang nội bộ HealthScan tham chiếu khuyến nghị WHO, FDA; không thay thế tư vấn y khoa.*
+`;
+
+const NUTRI_INFO_MD = `
+**Nutri-Score (tham khảo) là gì?**
+
+- Nhãn 5 mức **A → E** theo **100 g / 100 ml**, giúp so sánh **nhanh** trong *cùng nhóm*.
+- **Điểm tổng =** (năng lượng + đường + bão hoà + natri) **−** (chất xơ + protein + % trái cây/rau/hạt + dầu tốt).
+- **Quy đổi (đồ ăn):**
+  - Tổng điểm **≤ −1** → **A**
+  - **≤ 2** → **B**
+  - **≤ 10** → **C**
+  - **≤ 18** → **D**
+  - **> 18** → **E**
+  - *(Đồ uống có quy tắc riêng.)*
+
+**Minh hoạ ngưỡng:**
+- Đường ~4.5/9/13.5/18/22.5… g → tăng dần **điểm trừ**
+- Natri ~90/180/270/…/900 mg → tăng dần **điểm trừ**
+- Xơ ~1/2/3/3.5/4.7 g → tăng dần **điểm cộng**
+- Protein ~1.6/3.2/4.8/6.4/8 g → tăng dần **điểm cộng**
+
+**Ví dụ:** Ngũ cốc 100 g: ~1600 kJ, đường 18 g, bão hoà 1.5 g, natri 200 mg, xơ 7 g, protein 11 g → tổng **≈3–6** ⇒ **C–B** (tham khảo).
+
+**Cách dùng đúng:**
+- So sánh **nhanh** trong **cùng nhóm**; **không** cá nhân hoá theo bệnh nền/mục tiêu.
+- Trên HealthScan, Nutri-Score chỉ là **tham khảo**; quyết định dựa trên **Điểm sức khỏe cá nhân hoá**.
+
+**Nguồn:** Santé publique France (Nutri-Score), EFSA/EU, WHO, FDA. Ứng dụng dùng phiên bản **rút gọn** bám sát quy tắc gốc.
+`;
 
 /* ====== Component ====== */
 export default function ChatbotScreen() {
@@ -135,6 +201,10 @@ export default function ChatbotScreen() {
   const [isPending, setIsPending] = useState(false);
   const abortRef = useRef(null);
 
+  // Modals
+  const [showHealthInfo, setShowHealthInfo] = useState(false);
+  const [showNutriInfo, setShowNutriInfo] = useState(false);
+
   // Load profile, last label, sessions
   useEffect(() => {
     (async () => {
@@ -146,7 +216,7 @@ export default function ChatbotScreen() {
 
   useEffect(() => { if (!pulseFAQ) return; const t = setTimeout(() => setPulseFAQ(false), 1600); return () => clearTimeout(t); }, [pulseFAQ]);
 
-  // Persist current conversation to sessions storage
+  // Persist session
   const persistSession = async (msgs) => {
     const id = chatIdRef.current;
     const updatedAt = new Date().toISOString();
@@ -164,7 +234,7 @@ export default function ChatbotScreen() {
     await saveSessions(nextSessions);
   };
 
-  // Start new conversation
+  // New chat
   const newChat = async () => {
     chatIdRef.current = `chat-${Date.now()}`;
     setMessages([{ role: 'bot', text: 'Bắt đầu cuộc trò chuyện mới. Bạn muốn hỏi gì về sản phẩm hoặc sức khỏe? 😊', ts: new Date() }]);
@@ -205,7 +275,7 @@ export default function ChatbotScreen() {
       setMessages(prev => prev.filter(m => !m._typing));
 
       if (!data.ok) {
-        const errMsgs = [...nextUserMsgs, { role: 'bot', text: `Xin lỗi, có lỗi khi xử lý: ${data.error || 'unknown error'}`, ts: new Date() }];
+        const errMsgs = [...nextUserMsgs, { role: 'bot', text: formatBackendError(data.error), ts: new Date() }];
         setMessages(errMsgs);
         await persistSession(errMsgs);
         return;
@@ -231,66 +301,11 @@ export default function ChatbotScreen() {
     }
   };
 
-  // >>> NEW: gọi /recommend trực tiếp cho chip “Sản phẩm thay thế”
-  const callRecommend = async () => {
-    if (isPending) return;
+  /* ===== Đề xuất: 5 mục/lần qua /chat để đồng nhất format ===== */
+  const requestRecommend = () => { if (!isPending) onSend('Sản phẩm thay thế'); };
+  const requestMoreRecommend = () => { if (!isPending) onSend('Bổ sung sản phẩm thay thế'); };
 
-    const now = new Date();
-    const nextUserMsgs = [...messages, { role: 'user', text: 'Đề xuất sản phẩm thay thế', ts: now }];
-    setMessages(nextUserMsgs);
-    setInput('');
-
-    setIsPending(true);
-    try {
-      const resp = await fetch(`${BACKEND}/recommend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile: profile || {},
-          label:   lastLabel || {},
-          k: 5
-        }),
-      });
-      const data = await resp.json();
-
-      let text;
-      if (!data.ok) {
-        text = `Xin lỗi, chưa thể đề xuất: ${data.error || 'catalog chưa sẵn sàng.'}`;
-      } else {
-        const lines = [];
-        lines.push('**Trả lời nhanh**: Đây là vài lựa chọn phù hợp hơn dựa trên hồ sơ & nhãn hiện tại.');
-        lines.push(`- Danh mục ước đoán: ${data.category_guess} → nhóm ${data.bucket}`);
-        lines.push('');
-        (data.items || []).forEach((it, idx) => {
-          const m = it.n_100g || {};
-          const stores = (it.stores || []).map(s => `${s.store} (${s.district})`).join(', ') || '—';
-          lines.push(`${idx+1}. **${it.name}** — ${it.brand || 'N/A'} (#${it.barcode || '—'})`);
-          lines.push(`   - Điểm sức khỏe: **${it.score}**; Lý do: ${it.reasons.join(', ') || '—'}`);
-          lines.push(`   - Dinh dưỡng/100g: đường ${m.sugars_g ?? '-'} g; natri ${m.sodium_mg ?? '-'} mg; bão hoà ${m.satfat_g ?? '-'} g; protein ${m.protein_g ?? '-'} g; ${m.kcal ?? '-'} kcal`);
-          lines.push(`   - Có thể tìm tại (Hà Nội): ${stores}`);
-        });
-        lines.push('');
-        lines.push('- **Tiêu chí chọn tốt hơn**: đường ≤5 g/100 g; natri ≤120 mg/100 g; bão hòa ≤3 g/100 g; ưu tiên chất xơ ≥5 g/100 g hoặc protein ≥10 g/100 g.');
-        text = lines.join('\n');
-      }
-      const botMsgs = [...nextUserMsgs, { role: 'bot', text, ts: new Date() }];
-      setMessages(botMsgs);
-      await persistSession(botMsgs);
-    } catch (e) {
-      const errMsgs = [...nextUserMsgs, { role: 'bot', text: `Mạng lỗi: ${String(e)}`, ts: new Date() }];
-      setMessages(errMsgs);
-      await persistSession(errMsgs);
-    } finally {
-      setIsPending(false);
-      chatRef.current?.scrollToEnd({ animated: true });
-    }
-  };
-
-  const addQuick = (q) => {
-    if (isPending) return;
-    onSend(q);
-  };
-
+  const addQuick = (q) => { if (!isPending) onSend(q); };
   const FAQ = useMemo(() => buildPersonalFAQ(profile || {}), [profile]);
   const toggleFAQ = () => { setShowFAQ(v => !v); if (!showFAQ) setPulseFAQ(true); };
   const onStop = () => { abortRef.current?.abort(); };
@@ -305,13 +320,19 @@ export default function ChatbotScreen() {
         <TouchableOpacity style={[styles.toolChip, isPending && { opacity: 0.5 }]} onPress={() => addQuick('Xem thành phần')} disabled={isPending}>
           <MaterialIcons name="inventory" size={14} color={COLOR.green} /><Text style={styles.toolChipText}>Xem thành phần</Text>
         </TouchableOpacity>
-        {/* NEW: gọi recommend trực tiếp */}
-        <TouchableOpacity
-          style={[styles.toolChip, isPending && { opacity: 0.5 }]}
-          onPress={callRecommend}
-          disabled={isPending}
-        >
+
+        <TouchableOpacity style={[styles.toolChip, isPending && { opacity: 0.5 }]} onPress={requestRecommend} disabled={isPending}>
           <MaterialIcons name="recommend" size={14} color={COLOR.green} /><Text style={styles.toolChipText}>Sản phẩm thay thế</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.toolChip, isPending && { opacity: 0.5 }]} onPress={requestMoreRecommend} disabled={isPending}>
+          <MaterialIcons name="playlist-add" size={14} color={COLOR.green} /><Text style={styles.toolChipText}>Bổ sung 5 sản phẩm</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.toolChip, isPending && { opacity: 0.5 }]} onPress={() => setShowHealthInfo(true)} disabled={isPending}>
+          <MaterialIcons name="monitor-heart" size={14} color={COLOR.green} /><Text style={styles.toolChipText}>Điểm sức khỏe?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.toolChip, isPending && { opacity: 0.5 }]} onPress={() => setShowNutriInfo(true)} disabled={isPending}>
+          <MaterialIcons name="science" size={14} color={COLOR.green} /><Text style={styles.toolChipText}>Nutri-Score?</Text>
         </TouchableOpacity>
       </View>
     );
@@ -321,7 +342,7 @@ export default function ChatbotScreen() {
     <SafeAreaView style={styles.container}>
       {/* MENU */}
       <Modal visible={menuOpen} transparent animationType="fade">
-        <TouchableOpacity style={styles.menuOverlay} activeOpacity={1} onPress={() => setMenuOpen(false)}>
+        <TouchableOpacity style={styles.modalBg} activeOpacity={1} onPress={() => setMenuOpen(false)}>
           <View style={styles.menu}>
             <TouchableOpacity style={styles.menuItem} onPress={async () => { setMenuOpen(false); await newChat(); }}>
               <MaterialIcons name="chat" size={18} color="#111827" />
@@ -448,7 +469,7 @@ export default function ChatbotScreen() {
             );
           })}
 
-          {/* >>> render time an toàn */}
+          {/* render time an toàn */}
           {(() => {
             if (!messages.length) return null;
             const rawTs = messages[messages.length - 1]?.ts;
@@ -494,71 +515,38 @@ export default function ChatbotScreen() {
         </View>
       </KeyboardAvoidingView>
 
-      {/* HISTORY MODAL — danh sách phiên chat */}
-      <Modal visible={showHistory} transparent animationType="fade">
-        <TouchableOpacity style={styles.modalBg} activeOpacity={1} onPress={() => setShowHistory(false)}>
-          <View style={styles.historyCard}>
-            <View style={styles.historyHeader}>
-              <MaterialIcons name="history" size={18} color={COLOR.green} />
-              <Text style={styles.historyTitle}>Lịch sử cuộc trò chuyện</Text>
-              <TouchableOpacity onPress={() => setShowHistory(false)}>
-                <MaterialIcons name="close" size={18} color="#111827" />
-              </TouchableOpacity>
+      {/* INFO: Health Score */}
+      <Modal visible={showHealthInfo} transparent animationType="fade">
+        <TouchableOpacity style={styles.modalBg} activeOpacity={1} onPress={() => setShowHealthInfo(false)}>
+          <View style={styles.centerWrap}>
+            <View style={styles.infoCard}>
+              <View style={styles.infoHeader}>
+                <MaterialIcons name="monitor-heart" size={18} color={COLOR.green} />
+                <Text style={styles.infoTitle}>Điểm sức khỏe (cá nhân hoá)</Text>
+                <TouchableOpacity onPress={() => setShowHealthInfo(false)}><MaterialIcons name="close" size={18} color="#111827" /></TouchableOpacity>
+              </View>
+              <ScrollView contentContainerStyle={{ paddingBottom: 8 }}>
+                <Markdown style={mdStyles}>{HEALTH_INFO_MD}</Markdown>
+              </ScrollView>
             </View>
-            <ScrollView style={{ maxHeight: 380 }}>
-              {sessions.length === 0 && <Text style={{ color: '#6b7280' }}>Chưa có phiên chat nào.</Text>}
-              {sessions.map((s, idx) => (
-                <View key={s.id} style={[styles.sessionRow, { alignItems: 'center' }]}>
-                  <TouchableOpacity
-                    style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}
-                    onPress={() => {
-                      setMessages(reviveMsgDates(s.messages || []));
-                      chatIdRef.current = s.id;
-                      setShowHistory(false);
-                    }}
-                  >
-                    <MaterialIcons name="chat" size={18} color={COLOR.green} />
-                    <View style={{ flex: 1, marginLeft: 6 }}>
-                      <Text style={{ fontWeight: '700', color: '#0f172a' }}>
-                        {s.title || `Cuộc chat #${idx + 1}`}
-                      </Text>
-                      <Text style={{ color: '#6b7280', fontSize: 12 }}>
-                        {new Date(s.updatedAt || Date.now()).toLocaleString('vi-VN')}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
-                  {/* Nút sửa tên */}
-                  <TouchableOpacity
-                    style={{ marginHorizontal: 4 }}
-                    onPress={() => {
-                      const newTitle = prompt("Nhập tên mới:", s.title || `Cuộc chat #${idx + 1}`);
-                      if (newTitle) {
-                        const updated = sessions.map(item =>
-                          item.id === s.id ? { ...item, title: newTitle } : item
-                        );
-                        setSessions(updated);
-                        saveSessions(updated);
-                      }
-                    }}
-                  >
-                    <MaterialIcons name="edit" size={18} color="green" />
-                  </TouchableOpacity>
-
-                  {/* Nút xóa */}
-                  <TouchableOpacity
-                    style={{ marginHorizontal: 4 }}
-                    onPress={() => {
-                      const filtered = sessions.filter(item => item.id !== s.id);
-                      setSessions(filtered);
-                      saveSessions(filtered);
-                    }}
-                  >
-                    <MaterialIcons name="delete" size={18} color="#dc2626" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
+      {/* INFO: Nutri-Score */}
+      <Modal visible={showNutriInfo} transparent animationType="fade">
+        <TouchableOpacity style={styles.modalBg} activeOpacity={1} onPress={() => setShowNutriInfo(false)}>
+          <View style={styles.centerWrap}>
+            <View style={styles.infoCard}>
+              <View style={styles.infoHeader}>
+                <MaterialIcons name="science" size={18} color={COLOR.green} />
+                <Text style={styles.infoTitle}>Nutri-Score (tham khảo)</Text>
+                <TouchableOpacity onPress={() => setShowNutriInfo(false)}><MaterialIcons name="close" size={18} color="#111827" /></TouchableOpacity>
+              </View>
+              <ScrollView contentContainerStyle={{ paddingBottom: 8 }}>
+                <Markdown style={mdStyles}>{NUTRI_INFO_MD}</Markdown>
+              </ScrollView>
+            </View>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -569,6 +557,25 @@ export default function ChatbotScreen() {
 /* ===== Styles ===== */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLOR.bg },
+
+  /* modal common */
+  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.16)' },
+  centerWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 12 },
+  infoCard: {
+    width: '92%',
+    maxWidth: 760,
+    maxHeight: '80%',
+    backgroundColor: COLOR.white,
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLOR.border,
+    elevation: 20,
+  },
+  infoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+  infoTitle: { color: '#0f172a', fontWeight: '800' },
+
+  /* menu */
   menuOverlay: { flex: 1 },
   menu: {
     position: 'absolute', top: 70, right: 12, backgroundColor: COLOR.white, width: 240,
@@ -579,6 +586,7 @@ const styles = StyleSheet.create({
   menuItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10 },
   menuText: { color: '#111827', fontWeight: '600' },
 
+  /* welcome & faq */
   welcomeCard: { backgroundColor: COLOR.header, borderRadius: 10, marginHorizontal: 12, marginTop: 10, padding: 14, borderWidth: 1, borderColor: COLOR.border },
   welcomeSub: { marginTop: 6, color: COLOR.textMuted, textAlign: 'center' },
   badgeRow: { flexDirection: 'row', gap: 8, marginTop: 10, justifyContent: 'center' },
@@ -595,6 +603,7 @@ const styles = StyleSheet.create({
   faqTag: { color: COLOR.tagGreen, fontWeight: '900', marginBottom: 6 },
   faqQuestion: { color: '#1f2937', fontWeight: '600' },
 
+  /* chat */
   chat: { flex: 1, paddingHorizontal: 12 },
   msgRow: { flexDirection: 'row', gap: 8, marginVertical: 6, alignItems: 'flex-end', width: '100%' },
   msgRowRight: { flexDirection: 'row-reverse', alignItems: 'flex-end', justifyContent: 'flex-start' },
@@ -605,6 +614,7 @@ const styles = StyleSheet.create({
   textUser: { color: '#0f172a', fontWeight: '600', textAlign: 'right' },
   tsText: { color: '#7c8f84', fontSize: 12, marginLeft: 50, marginTop: 4 },
 
+  /* tools & composer */
   toolChipsRow: { flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' },
   toolChip: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#f0faf4', borderWidth: 1, borderColor: '#d3ecd9', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   toolChipText: { color: COLOR.green, fontWeight: '700' },
@@ -615,13 +625,13 @@ const styles = StyleSheet.create({
   sendBtn: { paddingHorizontal: 14, height: 40, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: COLOR.green },
   stopBtn: { backgroundColor: '#ef4444' },
 
-  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.16)' },
+  /* history */
   historyCard: { position: 'absolute', top: 100, left: 12, right: 12, backgroundColor: COLOR.white, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLOR.border, elevation: 16 },
   historyHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   historyTitle: { color: '#0f172a', fontWeight: '800' },
   sessionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: COLOR.border, padding: 10, borderRadius: 10, marginBottom: 8 },
 
-  welcomeCard2: { backgroundColor: COLOR.header, borderRadius: 12, marginHorizontal: 12, marginTop: 8, padding: 14, borderWidth: 1, borderColor: COLOR.border },
+  /* toolbar */
   toolbarRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   toolbarSide: { width: 42, alignItems: 'flex-start' },
   toolbarCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
@@ -637,6 +647,7 @@ const mdStyles = {
   list_item: { marginVertical: 2 },
   blockquote: { borderLeftWidth: 3, borderLeftColor: '#c8ebd3', paddingLeft: 10, color: '#0f172a', backgroundColor: '#f7fbf8' },
   code_block: { backgroundColor: '#f3f4f6', borderRadius: 8, padding: 10, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
+  code_inline: { backgroundColor: '#f1f5f9', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   table: { borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 6, overflow: 'hidden', marginVertical: 6, minWidth: 280 },
   thead: { backgroundColor: '#eef7f2' },
   th: { backgroundColor: '#eef7f2', padding: 8, borderRightWidth: 1, borderColor: '#e5e7eb', fontWeight: '800' },
