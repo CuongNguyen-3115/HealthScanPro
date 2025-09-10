@@ -1,0 +1,129 @@
+[
+    {
+      "store": "AEON Mall Long Biên",
+      "district": "Long Biên",
+      "type": "mall",
+      "chains": ["AEON", "Topvalu", "AEON Wellness", "Ministop", "Yakult", "Ajinomoto", "Acecook"],
+      "categories": ["beverage","snack","noodle","milk","oil","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "AEON Mall Hà Đông",
+      "district": "Hà Đông",
+      "type": "mall",
+      "chains": ["AEON", "Topvalu", "AEON Wellness", "Yakult", "Ajinomoto", "Acecook"],
+      "categories": ["beverage","snack","noodle","milk","oil","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "Lotte Mall West Lake Hanoi",
+      "district": "Tây Hồ",
+      "type": "mall",
+      "chains": ["Lotte","Pepsi","Coca-Cola","CJ","Bibigo","Orion","Oishi","Haitai"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "Lotte Center Hanoi",
+      "district": "Ba Đình",
+      "type": "mall",
+      "chains": ["Lotte","Pepsi","Coca-Cola","CJ","Bibigo","Orion","Oishi"],
+      "categories": ["beverage","snack","milk","condiment","tea","coffee","water"]
+    },
+    {
+      "store": "Vincom Mega Mall Times City (WinMart)",
+      "district": "Hai Bà Trưng",
+      "type": "mall",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola","Acecook","Masan"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "Vincom Mega Mall Royal City (WinMart)",
+      "district": "Thanh Xuân",
+      "type": "mall",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola","Acecook","Masan"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "Vincom Center Bà Triệu (WinMart)",
+      "district": "Hai Bà Trưng",
+      "type": "mall",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola","Ajinomoto"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "Vincom Center Phạm Ngọc Thạch (WinMart)",
+      "district": "Đống Đa",
+      "type": "mall",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water"]
+    },
+    {
+      "store": "Vincom Plaza Long Biên (WinMart)",
+      "district": "Long Biên",
+      "type": "mall",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water"]
+    },
+    {
+      "store": "GO! Thăng Long (Big C Trần Duy Hưng)",
+      "district": "Cầu Giấy",
+      "type": "hypermarket",
+      "chains": ["GO!","Big C","Orion","Oishi","Vinamilk","TH true","Pepsi","Coca-Cola","Acecook","Masan"],
+      "categories": ["beverage","snack","noodle","milk","oil","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "GO! Long Biên",
+      "district": "Long Biên",
+      "type": "hypermarket",
+      "chains": ["GO!","Big C","Orion","Oishi","Vinamilk","TH true","Pepsi","Coca-Cola","Acecook","Masan"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "MM Mega Market Thăng Long",
+      "district": "Nam Từ Liêm",
+      "type": "hypermarket",
+      "chains": ["MM Mega Market","Metro","Nestlé","Pepsi","Coca-Cola","Acecook","Ajinomoto","C.P."],
+      "categories": ["beverage","snack","noodle","milk","oil","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "MM Mega Market Hoàng Mai",
+      "district": "Hoàng Mai",
+      "type": "hypermarket",
+      "chains": ["MM Mega Market","Metro","Nestlé","Pepsi","Coca-Cola","Acecook","Ajinomoto","C.P."],
+      "categories": ["beverage","snack","noodle","milk","oil","condiment","tea","coffee","water","cereal"]
+    },
+    {
+      "store": "WinMart+ (chuỗi cửa hàng tiện lợi)",
+      "district": "Nhiều quận",
+      "type": "convenience",
+      "chains": ["WinMart","Vinamilk","TH true","Nestlé","Pepsi","Coca-Cola","Lavie","Aquafina","Orion","Oishi"],
+      "categories": ["beverage","snack","milk","water","noodle","condiment"]
+    },
+    {
+      "store": "Circle K (chuỗi cửa hàng tiện lợi)",
+      "district": "Nhiều quận",
+      "type": "convenience",
+      "chains": ["Circle K","Pepsi","Coca-Cola","Lavie","Aquafina","Orion","Oishi","Nestlé"],
+      "categories": ["beverage","snack","milk","water","noodle"]
+    },
+    {
+      "store": "7-Eleven (cửa hàng tiện lợi)",
+      "district": "Một số khu vực",
+      "type": "convenience",
+      "chains": ["7-Eleven","Pepsi","Coca-Cola","Lavie","Aquafina","Orion","Oishi","Nestlé"],
+      "categories": ["beverage","snack","milk","water","noodle"]
+    },
+    {
+      "store": "Co.opmart Hà Nội",
+      "district": "Một số quận",
+      "type": "supermarket",
+      "chains": ["Co.opmart","Vinamilk","TH true","Pepsi","Coca-Cola","Acecook","Ajinomoto"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water"]
+    },
+    {
+      "store": "BRG Mart Hà Nội",
+      "district": "Một số quận",
+      "type": "supermarket",
+      "chains": ["BRG Mart","Hapro","Pepsi","Coca-Cola","Vinamilk","TH true","Acecook","Ajinomoto"],
+      "categories": ["beverage","snack","noodle","milk","condiment","tea","coffee","water"]
+    }
+  ]
+  

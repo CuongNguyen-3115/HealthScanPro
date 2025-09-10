@@ -4,7 +4,7 @@
 import { Camera, CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -21,7 +21,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import AsyncStorage from '@react-native-async-storage/async-storage'; // <== NEW
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraScannerService from '../services/CameraScannerService';
 
 // ---------------- API base resolver (no process.env needed) ----------------
@@ -65,7 +65,11 @@ export default function ScanProductScreen() {
   const [searchText, setSearchText] = useState('');
   const [photoUri, setPhotoUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
+
+  // === NEW: state dừng/tiếp tục phân tích ảnh
   const [analyzing, setAnalyzing] = useState(false);
+  const [analyzingUri, setAnalyzingUri] = useState(null);   // ảnh đang phân tích
+  const analyzeAbortRef = useRef(null);                      // AbortController hiện tại
 
   // ---------- Pick from library ----------
   const pickFromLibrary = async () => {
@@ -119,11 +123,16 @@ export default function ScanProductScreen() {
     setPhotoUri(uri);
   };
 
-  // ---------- Analyze: POST to /label/analyze ----------
+  // ---------- Analyze: POST to /label/analyze (có thể DỪNG) ----------
   const analyzeImage = async (uri) => {
-    if (!uri) return;
+    if (!uri || analyzing) return;
     try {
       setAnalyzing(true);
+      setAnalyzingUri(uri);
+
+      const controller = new AbortController();
+      analyzeAbortRef.current = controller;
+
       const name = filenameFromUri(uri);
       const type = inferMimeFromName(name);
 
@@ -137,12 +146,20 @@ export default function ScanProductScreen() {
         form.append('image', { uri, name, type });
       }
 
-      const resp = await fetch(`${API_BASE}/label/analyze`, { method: 'POST', body: form });
+      const resp = await fetch(`${API_BASE}/label/analyze`, {
+        method: 'POST',
+        body: form,
+        signal: controller.signal, // <— quan trọng để dừng
+      });
+
       let data;
       try {
         data = await resp.json();
       } catch (e) {
-        throw new Error(`Server trả về không phải JSON (status ${resp.status}).` + (Platform.OS === 'web' ? '\nGợi ý: kiểm tra CORS trên Flask (flask-cors).' : ''));
+        throw new Error(
+          `Server trả về không phải JSON (status ${resp.status}).` +
+            (Platform.OS === 'web' ? '\nGợi ý: kiểm tra CORS trên Flask (flask-cors).' : '')
+        );
       }
       if (!resp.ok || data?.ok === false) {
         throw new Error(data?.error || `Lỗi server (status ${resp.status}).`);
@@ -150,14 +167,14 @@ export default function ScanProductScreen() {
 
       const label = data.label || null;
 
-      // === NEW: lưu nhãn quét gần nhất cho Chatbot ===
+      // Lưu nhãn quét gần nhất cho Chatbot
       try {
         await AsyncStorage.setItem('last_scan_label', JSON.stringify(label));
       } catch (e) {
         console.warn('[ScanProduct] Lưu last_scan_label thất bại:', e);
       }
 
-      // Điều hướng sang màn phân tích chi tiết (giữ nguyên)
+      // Điều hướng sang màn phân tích chi tiết
       router.push({
         pathname: '/ProductAnalysisScreen',
         params: {
@@ -168,10 +185,22 @@ export default function ScanProductScreen() {
         },
       });
     } catch (e) {
-      alert(`Phân tích thất bại: ${String(e?.message || e)}`);
+      if (e?.name === 'AbortError') {
+        // người dùng đã dừng – không báo lỗi ầm ĩ
+        console.log('[ScanProduct] analyze aborted');
+      } else {
+        alert(`Phân tích thất bại: ${String(e?.message || e)}`);
+      }
     } finally {
       setAnalyzing(false);
+      setAnalyzingUri(null);
+      analyzeAbortRef.current = null;
     }
+  };
+
+  // === NEW: dừng phân tích ảnh hiện tại
+  const stopAnalyze = () => {
+    analyzeAbortRef.current?.abort();
   };
 
   const renderContent = () => {
@@ -183,14 +212,35 @@ export default function ScanProductScreen() {
             <Ionicons name="camera" size={60} color="#198754" style={styles.icon} />
             <Text style={styles.contentTitle}>Chụp Ảnh Sản Phẩm</Text>
             <Text style={styles.contentSubtitle}>Hướng camera vào nhãn thành phần của sản phẩm</Text>
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleTakePhoto}>
+            <TouchableOpacity style={[styles.primaryBtn, analyzing && styles.disabledBtn]} onPress={handleTakePhoto} disabled={analyzing}>
               <Ionicons name="camera" size={20} color="#fff" />
               <Text style={styles.primaryBtnText}>Mở Camera</Text>
             </TouchableOpacity>
+
             {photoUri && (
-              <TouchableOpacity style={[styles.primaryBtn, { marginTop: 12 }]} onPress={() => analyzeImage(photoUri)}>
-                <MaterialIcons name="analytics" size={20} color="#fff" />
-                <Text style={styles.primaryBtnText}>Phân tích ảnh này</Text>
+              <TouchableOpacity
+                style={[
+                  styles.primaryBtn,
+                  { marginTop: 12 },
+                  analyzing && analyzingUri === photoUri ? styles.stopBtn : null,
+                  analyzing && analyzingUri !== photoUri ? styles.disabledBtn : null,
+                ]}
+                onPress={() =>
+                  analyzing && analyzingUri === photoUri ? stopAnalyze() : analyzeImage(photoUri)
+                }
+                disabled={analyzing && analyzingUri !== photoUri}
+              >
+                {analyzing && analyzingUri === photoUri ? (
+                  <>
+                    <MaterialIcons name="pause" size={20} color="#fff" />
+                    <Text style={styles.primaryBtnText}>Dừng phân tích</Text>
+                  </>
+                ) : (
+                  <>
+                    <MaterialIcons name="analytics" size={20} color="#fff" />
+                    <Text style={styles.primaryBtnText}>Phân tích ảnh này</Text>
+                  </>
+                )}
               </TouchableOpacity>
             )}
           </>
@@ -207,14 +257,35 @@ export default function ScanProductScreen() {
             <Text style={styles.contentSubtitle}>
               {uploadUri ? 'Ảnh đã chọn từ thư viện' : 'Chọn ảnh nhãn thành phần từ thư viện'}
             </Text>
-            <TouchableOpacity style={styles.primaryBtn} onPress={pickFromLibrary}>
+            <TouchableOpacity style={[styles.primaryBtn, analyzing && styles.disabledBtn]} onPress={pickFromLibrary} disabled={analyzing}>
               <MaterialIcons name="file-upload" size={20} color="#fff" />
               <Text style={styles.primaryBtnText}>{uploadUri ? 'Chọn lại ảnh' : 'Chọn Ảnh'}</Text>
             </TouchableOpacity>
+
             {uploadUri && (
-              <TouchableOpacity style={[styles.primaryBtn, { marginTop: 12 }]} onPress={() => analyzeImage(uploadUri)}>
-                <MaterialIcons name="analytics" size={20} color="#fff" />
-                <Text style={styles.primaryBtnText}>Phân tích ảnh này</Text>
+              <TouchableOpacity
+                style={[
+                  styles.primaryBtn,
+                  { marginTop: 12 },
+                  analyzing && analyzingUri === uploadUri ? styles.stopBtn : null,
+                  analyzing && analyzingUri !== uploadUri ? styles.disabledBtn : null,
+                ]}
+                onPress={() =>
+                  analyzing && analyzingUri === uploadUri ? stopAnalyze() : analyzeImage(uploadUri)
+                }
+                disabled={analyzing && analyzingUri !== uploadUri}
+              >
+                {analyzing && analyzingUri === uploadUri ? (
+                  <>
+                    <MaterialIcons name="pause" size={20} color="#fff" />
+                    <Text style={styles.primaryBtnText}>Dừng phân tích</Text>
+                  </>
+                ) : (
+                  <>
+                    <MaterialIcons name="analytics" size={20} color="#fff" />
+                    <Text style={styles.primaryBtnText}>Phân tích ảnh này</Text>
+                  </>
+                )}
               </TouchableOpacity>
             )}
           </>
@@ -248,15 +319,16 @@ export default function ScanProductScreen() {
                       Đã phát hiện: <Text style={{ fontWeight: '700' }}>{lastBarcode}</Text>
                     </Text>
                     <TouchableOpacity
-                      style={[styles.primaryBtn, { marginBottom: 10 }]}
+                      style={[styles.primaryBtn, { marginBottom: 10 }, analyzing && styles.disabledBtn]}
                       onPress={() => router.push({ pathname: '/ProductAnalysisScreen', params: { barcode: lastBarcode } })}
+                      disabled={analyzing}
                     >
                       <MaterialIcons name="analytics" size={20} color="#fff" />
                       <Text style={styles.primaryBtnText}>Phân tích theo mã này</Text>
                     </TouchableOpacity>
                   </>
                 ) : null}
-                <TouchableOpacity style={styles.primaryBtn} onPress={startScan}>
+                <TouchableOpacity style={[styles.primaryBtn, analyzing && styles.disabledBtn]} onPress={startScan} disabled={analyzing}>
                   <FontAwesome name="barcode" size={20} color="#fff" />
                   <Text style={styles.primaryBtnText}>
                     {barcodePermission === false ? 'Xin quyền & bắt đầu quét' : 'Bắt đầu quét'}
@@ -273,7 +345,7 @@ export default function ScanProductScreen() {
             <Text style={styles.contentTitle}>Tìm Kiếm Sản Phẩm</Text>
             <Text style={styles.contentSubtitle}>Nhập tên sản phẩm để tra cứu thông tin</Text>
             <TextInput style={styles.input} placeholder="Ví dụ: Coca Cola…" value={searchText} onChangeText={setSearchText} />
-            <TouchableOpacity style={styles.primaryBtn} onPress={() => alert(`Tìm: ${searchText}`)}>
+            <TouchableOpacity style={[styles.primaryBtn, analyzing && styles.disabledBtn]} onPress={() => alert(`Tìm: ${searchText}`)} disabled={analyzing}>
               <Ionicons name="search" size={20} color="#fff" />
               <Text style={styles.primaryBtnText}>Tìm Kiếm</Text>
             </TouchableOpacity>
@@ -288,6 +360,7 @@ export default function ScanProductScreen() {
     <TouchableOpacity
       style={[styles.tab, activeTab === tabKey && styles.activeTab, { width: width / 4 - 8 }]}
       onPress={() => setActiveTab(tabKey)}
+      disabled={analyzing}
     >
       {icon}
       <Text style={[styles.tabText, activeTab === tabKey && styles.activeTabText]}>{label}</Text>
@@ -296,7 +369,7 @@ export default function ScanProductScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()} disabled={analyzing}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
       <Text style={styles.title}>Quét Sản Phẩm</Text>
@@ -311,10 +384,15 @@ export default function ScanProductScreen() {
 
       <View style={styles.contentBox}>
         {renderContent()}
+
         {analyzing && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" />
             <Text style={{ marginTop: 8, color: '#111' }}>Đang phân tích…</Text>
+            <TouchableOpacity style={[styles.primaryBtn, styles.stopBtn, { marginTop: 12 }]} onPress={stopAnalyze}>
+              <MaterialIcons name="pause" size={20} color="#fff" />
+              <Text style={styles.primaryBtnText}>Dừng</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -341,11 +419,13 @@ const styles = StyleSheet.create({
   activeTab: { backgroundColor: '#e9f9f1', borderRadius: 8 },
   activeTabText: { color: '#198754', fontWeight: '600' },
   contentBox: { backgroundColor: '#fff', borderRadius: 10, alignItems: 'center', padding: 24, elevation: 3, minHeight: 260, justifyContent: 'center', position: 'relative' },
-  loadingOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: 10 },
+  loadingOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: 10, paddingHorizontal: 16 },
   icon: { marginBottom: 10 },
   contentTitle: { fontSize: 16, fontWeight: '700', color: '#222' },
   contentSubtitle: { fontSize: 13, color: '#666', marginBottom: 20, textAlign: 'center' },
   primaryBtn: { backgroundColor: '#198754', flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 8, alignItems: 'center' },
+  disabledBtn: { opacity: 0.5 },
+  stopBtn: { backgroundColor: '#ef4444' }, // màu nút dừng
   primaryBtnText: { color: '#fff', fontWeight: 'bold', marginLeft: 6 },
   previewImage: { width: 200, height: 200, borderRadius: 8, marginBottom: 12 },
   input: { width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 16 },

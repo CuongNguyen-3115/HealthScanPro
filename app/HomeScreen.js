@@ -96,9 +96,18 @@ export default function Index() {
               activeOpacity={0.8}
               onPress={() => router.push('/ScanProductScreen')}
             >
-              <MaterialIcons name="search" size={18} color="white" />
+              <MaterialIcons name="photo" size={18} color="white" />
               <Text style={styles.buttonText}>Quét Sản Phẩm</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={[styles.buttonTeal, { marginTop: 10 }]}
+                activeOpacity={0.8}
+                onPress={() => router.push('/ChatbotScreen')}
+              >
+                <MaterialIcons name="smart-toy" size={18} color="white" />
+                <Text style={styles.buttonText}>Trợ lý ảo</Text>
+              </TouchableOpacity>
           </View>
 
           {/* Footer icons */}
@@ -221,9 +230,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 13,
-  },
-  mb12: {
-    marginBottom: 12,
   },
   footerIcons: {
     flexDirection: 'row',

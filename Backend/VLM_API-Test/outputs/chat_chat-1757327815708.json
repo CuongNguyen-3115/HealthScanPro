@@ -1,0 +1,36 @@
+{
+  "chat_id": "chat-1757327815708",
+  "updated_at": "2025-09-08T10:37:43.479065",
+  "history": [
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-08T10:37:24.756675"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: 2025-09-07T17:11:15.555Z\n1. Thông tin cơ bản:\n   - Tuổi: 21\n   - Giới tính: Nam\n   - Cân nặng: 70 kg\n   - Chiều cao: 165 cm\n   - Mức vận động: Vận động trung bình (3–5 ngày/tuần)\n2. Tình trạng/bệnh nền:\n   - Cảm lạnh\n3. Dị ứng:\n   - Chưa ghi nhận\n4. Mục tiêu sức khỏe:\n   - Cải thiện tiêu hóa, Tăng năng lượng, Ngủ ngon hơn, Tăng cơ bắp, Giảm stress, Đẹp trai hơn",
+      "ts": "2025-09-08T10:37:24.757760"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-08T10:37:36.373054"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần (từ nhãn)\n- Nguyên văn: BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\nDanh sách parse:\n- Bột mì — [ALLERGEN]\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — có chứa chất nhũ hoá (471)\n- Chất béo thực vật — có chứa chất nhũ hoá (492, 322(i))\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — [ALLERGEN]\n- Trứng — [ALLERGEN]\n- Chất tạo xốp — (500(ii), 503(ii))\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — (1442, 415)\n- Chất điều chỉnh độ acid — (341(i))\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — (322(i), 476)\n- Muối i-ốt\n- Protein sữa — [ALLERGEN]",
+      "ts": "2025-09-08T10:37:36.373331"
+    },
+    {
+      "role": "user",
+      "text": "Đề xuất các tiêu chí chọn sản phẩm tốt hơn dựa trên nhãn hiện tại và hồ sơ của tôi.",
+      "ts": "2025-09-08T10:37:39.109164"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh:** Dựa trên nhãn và hồ sơ, bạn nên ưu tiên sản phẩm ít đường, ít natri, không chứa chất béo trans và có lượng chất xơ cao hơn để cải thiện tiêu hóa và tăng năng lượng.  Vì bạn muốn tăng cơ bắp, nên xem xét thêm lượng protein trong sản phẩm.\n\n**Tiêu chí chọn sản phẩm tốt hơn:**\n\n1. **Đường:** < 5g/khẩu phần (nhãn hiện tại: 12g, khá cao).\n2. **Natri:** < 100mg/khẩu phần (nhãn hiện tại: 110mg, nên chọn sản phẩm ít mặn hơn).\n3. **Chất béo bão hòa:**  < 2g/khẩu phần (không có trong nhãn, cần kiểm tra trên nhãn sản phẩm khác).  Hạn chế chất béo trans (không có thông tin trên nhãn, cần kiểm tra).\n4. **Chất xơ:** > 3g/khẩu phần (không có trong nhãn, cần kiểm tra). Cải thiện tiêu hoá là mục tiêu của bạn.\n5. **Protein:** > 3g/khẩu phần (nhãn hiện tại: 2g, thấp, nên tìm sản phẩm giàu protein hơn nếu muốn tăng cơ).  \n6. **Không chứa chất gây dị ứng:**  Sản phẩm hiện tại chứa bột mì, sữa, trứng và protein sữa – bạn cần kiểm tra xem mình có dị ứng với các chất này không. Nếu có, cần tránh hoàn toàn.\n\n**Gợi ý thay thế cấp danh mục:**\n\n- Bánh quy/bánh ngọt ít đường, ít chất béo bão hòa, giàu chất xơ và protein.\n- Ngũ cốc nguyên cám ít đường, bổ sung thêm protein.\n\n\n**Thông tin cần bổ sung:**\n\nĐể đưa ra đề xuất chính xác hơn, bạn vui lòng cung cấp thông tin hàm lượng chất béo bão hòa, chất béo trans và chất xơ trên nhãn sản phẩm.  Ngoài ra, nếu bạn có bất kỳ sở thích nào về hương vị, kết cấu (ví dụ: thích vị đắng, ngọt hay nhạt; thích giòn hay mềm) hay độ ngọt/mặn ưa thích, hãy cho tôi biết để tôi có thể đưa ra những gợi ý phù hợp hơn.",
+      "ts": "2025-09-08T10:37:43.478185"
+    }
+  ]
+}

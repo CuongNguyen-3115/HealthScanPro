@@ -1,0 +1,46 @@
+{
+  "chat_id": "chat-1757347381505",
+  "updated_at": "2025-09-08T16:11:20.610718",
+  "history": [
+    {
+      "role": "user",
+      "text": "Bạn có thể nêu tình trạng dị ứng hiện tại của tôi không",
+      "ts": "2025-09-08T16:03:13.276702"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh:** Hồ sơ sức khỏe của bạn hiện không ghi nhận bất kỳ dị ứng nào.\n\n**Tình trạng dị ứng hiện tại:**\n\nTheo hồ sơ sức khỏe được cung cấp, bạn hiện không có ghi nhận về bất kỳ dị ứng nào.  Tuy nhiên, nếu bạn có bất kỳ phản ứng dị ứng nào khác chưa được cập nhật vào hồ sơ, vui lòng bổ sung thông tin để tôi có thể hỗ trợ bạn tốt hơn.\n\n**Lưu ý:**  Nếu bạn nghi ngờ bản thân có dị ứng với bất kỳ thực phẩm nào, hãy tham khảo ý kiến bác sĩ hoặc chuyên gia dị ứng để được chẩn đoán chính xác.",
+      "ts": "2025-09-08T16:03:14.823706"
+    },
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-08T16:11:08.989267"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: 2025-09-08T12:52:23.919Z\n1. Thông tin cơ bản:\n   - Tuổi: 21\n   - Giới tính: Nam\n   - Cân nặng: 70 kg\n   - Chiều cao: 165 cm\n   - Mức vận động: Vận động trung bình (3–5 ngày/tuần)\n2. Tình trạng/bệnh nền:\n   - Cảm lạnh\n3. Dị ứng:\n   - Chưa ghi nhận\n4. Mục tiêu sức khỏe:\n   - Cải thiện tiêu hóa, Tăng năng lượng, Ngủ ngon hơn, Tăng cơ bắp, Giảm stress, Đẹp trai hơn",
+      "ts": "2025-09-08T16:11:08.989356"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-08T16:11:09.905237"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần (từ nhãn)\n- Nguyên văn: BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\nDanh sách parse:\n- Bột mì — [ALLERGEN]\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — có chứa chất nhũ hoá (471)\n- Chất béo thực vật — có chứa chất nhũ hoá (492, 322(i))\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — [ALLERGEN]\n- Trứng — [ALLERGEN]\n- Chất tạo xốp — (500(ii), 503(ii))\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — (1442, 415)\n- Chất điều chỉnh độ acid — (341(i))\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — (322(i), 476)\n- Muối i-ốt\n- Protein sữa — [ALLERGEN]",
+      "ts": "2025-09-08T16:11:09.905294"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm này có phù hợp với tình trạng sức khỏe của tôi không?",
+      "ts": "2025-09-08T16:11:13.544090"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh:**  Dựa trên hồ sơ sức khỏe và nhãn sản phẩm, sản phẩm này có chứa một số thành phần bạn nên cân nhắc, đặc biệt là lượng đường khá cao.  Tôi cần thêm thông tin về khẩu phần ăn hàng ngày của bạn để đánh giá chính xác hơn.\n\n**Phân tích phù hợp:**\n\nHồ sơ của bạn cho thấy mục tiêu tăng cơ bắp, cải thiện tiêu hóa và tăng năng lượng.  Tuy nhiên, sản phẩm này chứa nhiều thành phần không lý tưởng cho các mục tiêu này:\n\n- **Lượng đường cao:** 12g đường/khẩu phần (36.3g) là khá cao và không tốt cho việc kiểm soát cân nặng cũng như năng lượng ổn định.  \n- **Thành phần gây dị ứng tiềm tàng:**  Mặc dù hồ sơ không ghi nhận dị ứng, nhưng sản phẩm chứa bột mì, sữa và trứng – những chất gây dị ứng phổ biến. Nếu bạn có bất kỳ phản ứng nào trước đây với các thành phần này, hãy tránh sử dụng.\n- **Chất béo:**  Mặc dù không có thông tin cụ thể về loại chất béo,  nhưng việc sử dụng shortening thực vật và chất béo thực vật cần được xem xét kỹ hơn vì chúng có thể ảnh hưởng đến sức khỏe tim mạch nếu sử dụng nhiều.\n- **Chất phụ gia:**  Sản phẩm chứa nhiều chất phụ gia (nhũ hoá, tạo xốp, ổn định…), có thể gây khó tiêu đối với một số người.\n\n\n**Có sản phẩm tốt hơn không?**\n\nĐể tìm sản phẩm tốt hơn, chúng ta cần đặt ra các tiêu chí cụ thể.  Bạn có thể cho tôi biết bạn thích loại sản phẩm nào (ví dụ: bánh quy, sô cô la…) và bạn muốn sản phẩm đó có vị như thế nào (ngọt, đắng,…) không?\n\n\n**Tiêu chí chọn sản phẩm tốt hơn:**\n\n- Lượng đường < 5g/khẩu phần\n- Ít chất béo bão hòa và trans fat\n- Ít chất phụ gia\n- Thành phần nguyên liệu tự nhiên hơn\n- Nếu muốn tăng cơ, cần xem xét hàm lượng protein cao hơn.\n\n\n**Gợi ý thay thế cấp danh mục:**\n\n- Nếu thích bánh ngọt:  bánh quy nguyên cám ít đường, bánh sô cô la đen ít đường.\n- Nếu muốn ăn vặt:  ngũ cốc nguyên cám không thêm đường, các loại hạt không rang muối.\n\n\nĐể đưa ra lời khuyên chính xác hơn, bạn vui lòng cung cấp thêm thông tin:\n\n1. Bạn muốn tìm sản phẩm thay thế thuộc loại nào (bánh, kẹo,…)\n2. Vị ngọt bạn mong muốn là như thế nào (ít ngọt, ngọt vừa phải, ngọt nhiều)?\n3. Bạn có bị dị ứng hoặc không dung nạp với bất kỳ thực phẩm nào không (kể cả chưa được ghi nhận trong hồ sơ)?\n\nTôi sẽ giúp bạn tìm được sản phẩm phù hợp nhất với tình trạng sức khỏe và khẩu vị của bạn.",
+      "ts": "2025-09-08T16:11:20.610281"
+    }
+  ]
+}
