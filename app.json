@@ -1,5 +1,6 @@
 {
   "expo": {
+    "extra": { "API_BASE": "http://192.168.1.13:8888" },
     "name": "my-expo-app",
     "slug": "my-expo-app",
     "version": "1.0.0",
@@ -8,14 +9,19 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Ứng dụng cần quyền micro để ghi âm và gửi tới ASR."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": ["RECORD_AUDIO", "MODIFY_AUDIO_SETTINGS"],
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",

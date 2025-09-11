@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+HealthScan Server — mixed catalog loader + image support
+- Hỗ trợ cả catalog cũ (health_catalog.json) và OFF (off_vn_no_nulls (1).json)
+- Đề xuất sản phẩm kèm ảnh minh hoạ, ẩn barcode trong phần văn bản
+"""
+
 import os, io, re, json, base64, mimetypes, time, hashlib
 from datetime import datetime
 from pathlib import Path
@@ -9,11 +15,16 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from dotenv import load_dotenv, find_dotenv
 import google.generativeai as genai
+import requests
 
 # ==== Load env ====
 load_dotenv(find_dotenv())
 API_KEY = os.getenv("GEMINI_API_KEY")
 PORT = int(os.getenv("PORT", "8888"))
+ASR_UPSTREAM = os.getenv("ASR_URL", "").strip()  # ví dụ: https://xxxxx.ngrok-free.app/transcribe
+if not ASR_UPSTREAM:
+    print("[WARN] ASR_URL is empty; /asr proxy will return 503 if called.")
+
 
 # Paths: outputs + Data/*
 BASE_DIR = Path(__file__).parent
@@ -23,10 +34,28 @@ LABEL_CACHE_DIR = OUT_DIR / "label_cache"
 LABEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 DATA_DIR = BASE_DIR / "Data"
-CATALOG_PATH = os.getenv("CATALOG_PATH", str(DATA_DIR / "health_catalog.json"))
+
+def _resolve_catalog_path():
+    # Ưu tiên biến môi trường
+    env = os.getenv("CATALOG_PATH")
+    if env:
+        return env
+    # Thử OFF mới có khoảng trắng trong tên
+    cand = [
+        DATA_DIR / "off_vn_no_nulls (1).json",
+        DATA_DIR / "off_vn_no_nulls.json",
+        DATA_DIR / "health_catalog.json",
+    ]
+    for p in cand:
+        if Path(p).exists():
+            return str(p)
+    # Fallback cuối cùng
+    return str(DATA_DIR / "health_catalog.json")
+
+CATALOG_PATH = _resolve_catalog_path()
 STORES_PATH  = os.getenv("STORES_PATH",  str(DATA_DIR / "hanoi_stores.json"))
 
-APP_VERSION = "2025-09-11-reco+personalized+nutriscore"
+APP_VERSION = "2025-09-11-reco+personalized+nutriscore+images"
 HEALTH_SCORE_MAX = 8.0  # thang điểm sức khỏe cá nhân hoá
 
 if not API_KEY:
@@ -443,16 +472,92 @@ def _to_float(x):
     except Exception:
         return None
 
-def _load_catalog(path: str):
-    p = Path(path)
-    if not p.exists():
-        print(f"[WARN] Catalog not found at {p.resolve()}")
-        return []
-    raw = json.loads(p.read_text("utf-8"))
+def _off_extract_nutrition(n: dict):
+    def _num(x):
+        try:
+            return float(str(x).replace(",", "."))
+        except Exception:
+            return None
+    def get(key):
+        for k in (f"{key}_100g", key, f"{key}-100g", f"{key}_value"):
+            if k in n and n[k] is not None:
+                return _num(n[k])
+        return None
+
+    sugars = get("sugars")
+    salt   = get("salt")
+    sodium = get("sodium")
+    prot   = get("proteins")
+    satfat = get("saturated-fat")
+    kcal   = get("energy-kcal")
+    fiber  = get("fiber")
+    carbs  = get("carbohydrates")
+    fat    = get("fat")
+
+    if sodium is None and salt is not None:
+        sodium = salt * 0.393  # g Na ≈ g muối * 0.393
+
+    return {
+        "sugars_g": sugars,
+        "carbs_g": carbs,
+        "sodium_g": sodium,
+        "salt_g": salt,
+        "satfat_g": satfat,
+        "protein_g": prot,
+        "fat_g": fat,
+        "fiber_g": fiber,
+        "energy_kcal": kcal,
+    }
+
+def _pick_image(it: dict):
+    img = it.get("image_url") or it.get("image_front_url") or it.get("image_nutrition_url")
+    if not img:
+        sel = it.get("selected_images") or {}
+        front = sel.get("front") or {}
+        img = front.get("display") or front.get("small") or front.get("thumb")
+    return img
+
+def _pick_category_value(it: dict):
+    cat = (it.get("category") or "").strip()
+    if not cat:
+        tags = it.get("categories_tags") or []
+        if tags:
+            last = str(tags[-1])
+            cat = last.split(":", 1)[-1]
+    return (cat or "").lower().strip()
+
+def _load_catalog_off_format(raw_list):
     out = []
-    for it in raw:
-        if not it or not isinstance(it, dict): continue
-        if not it.get("eligible", False):
+    for it in raw_list:
+        if not isinstance(it, dict):
+            continue
+        name  = (it.get("name")  or "").strip()
+        brand = (it.get("brand") or "").strip()
+        if not (name or brand):
+            continue
+        norm = _off_extract_nutrition(it.get("nutrition") or {})
+        if sum(v is not None for v in norm.values()) < 3:
+            continue
+        out.append({
+            "barcode": it.get("barcode"),        # giữ nội bộ
+            "name": name,
+            "brand": brand,
+            "category": _pick_category_value(it),
+            "countries": [str(x).split(":")[-1] for x in (it.get("countries_tags") or [])],
+            "allergens": it.get("allergens") or [],
+            "additives": it.get("additives") or [],
+            "nutrition_100g": norm,
+            "image": _pick_image(it),
+        })
+    print(f"[INFO] Catalog(OFF) loaded: {len(out)} items")
+    return out
+
+def _load_catalog_old_format(raw_list):
+    out = []
+    for it in raw_list:
+        if not it or not isinstance(it, dict):
+            continue
+        if it.get("eligible") is False:
             continue
         name = (it.get("name") or "").strip()
         brand = (it.get("brand") or "").strip()
@@ -480,10 +585,27 @@ def _load_catalog(path: str):
             "countries": it.get("countries") or [],
             "allergens": it.get("allergens") or [],
             "additives": it.get("additives") or [],
-            "nutrition_100g": norm
+            "nutrition_100g": norm,
+            "image": it.get("image"),
         })
-    print(f"[INFO] Catalog loaded: {len(out)} items")
+    print(f"[INFO] Catalog(old) loaded: {len(out)} items")
     return out
+
+def _load_catalog(path: str):
+    p = Path(path)
+    if not p.exists():
+        print(f"[WARN] Catalog not found at {p.resolve()}")
+        return []
+    raw = json.loads(p.read_text("utf-8"))
+
+    if isinstance(raw, list) and raw:
+        looks_old = isinstance(raw[0], dict) and ("nutrition_100g" in raw[0] or "eligible" in raw[0])
+        if looks_old:
+            return _load_catalog_old_format(raw)
+        return _load_catalog_off_format(raw)
+
+    print("[WARN] Catalog file is not a list. Empty catalog returned.")
+    return []
 
 def _load_stores(path: str):
     p = Path(path)
@@ -510,13 +632,11 @@ STORES = _load_stores(STORES_PATH)
 
 # ==== Nutri-Score (đơn giản hoá, thực phẩm & đồ uống) ====
 def _ns_points_negative_food(nut):
-    # energy in kJ
     energy_kj = (nut.get("energy_kcal") or 0.0) * 4.184
     sugars = nut.get("sugars_g") or 0.0
     satfat = nut.get("satfat_g") or 0.0
     sodium_mg = (nut.get("sodium_g") or 0.0) * 1000.0
 
-    # tables (food) – truncated thresholds
     def p_energy(kj):
         steps = [335,670,1005,1340,1675,2010,2345,2680,3015,3350]
         for i,t in enumerate(steps,1):
@@ -543,16 +663,13 @@ def _ns_points_negative_food(nut):
 def _ns_points_positive_food(nut):
     fiber = nut.get("fiber_g") or 0.0
     protein = nut.get("protein_g") or 0.0
-    # Không có %FV&N trong catalog -> 0
     fvn_points = 0
-    # fiber points
     def p_fiber(g):
         steps = [0.9,1.9,2.8,3.7,4.7]
         for i,t in enumerate(steps,1):
             if g>t: continue
             return i-1
         return 5
-    # protein points
     def p_protein(g):
         steps = [1.6,3.2,4.8,6.4,8.0]
         for i,t in enumerate(steps,1):
@@ -562,7 +679,6 @@ def _ns_points_positive_food(nut):
 
 def _nutriscore_grade(total_points, is_beverage=False):
     if is_beverage:
-        # simplified beverage rule
         if total_points <= 1: return "B"
         if total_points <= 5: return "C"
         if total_points <= 9: return "D"
@@ -575,10 +691,8 @@ def _nutriscore_grade(total_points, is_beverage=False):
         return "E"
 
 def _nutriscore(nut, is_beverage=False):
-    # foods formula (simplified; FV&N not available)
     neg = _ns_points_negative_food(nut)
     pos, pfiber, pprot, pfvn = _ns_points_positive_food(nut)
-    # Protein ceiling rule: if neg >= 11 and fv&n < 5, limit protein points to 0 when subtracting
     effective_pos = pfvn + pfiber + (0 if (neg >= 11 and pfvn < 5) else pprot)
     total = neg - effective_pos
     grade = _nutriscore_grade(total, is_beverage=is_beverage)
@@ -729,8 +843,9 @@ def _recommend_core(profile, label, k=5, category=None):
         out.append({
             "name": it.get("name"),
             "brand": it.get("brand"),
-            "barcode": it.get("barcode"),
+            "barcode": it.get("barcode"),  # giữ nội bộ
             "category": it.get("category"),
+            "image": it.get("image"),       # <<< thêm ảnh vào JSON
             "health_score": round(float(s), 2),
             "health_level": _health_level(s),
             "reasons": reasons,
@@ -750,6 +865,9 @@ def _recommend_core(profile, label, k=5, category=None):
 @app.get("/_health")
 def _health():
     return jsonify(ok=True, version=APP_VERSION,
+                   catalog=len(CATALOG), stores=len(STORES),
+                   catalog_path=CATALOG_PATH,
+                   asr_upstream=ASR_UPSTREAM,   # <-- thêm dòng này
                    routes=sorted(str(r) for r in app.url_map.iter_rules()))
 
 # ==== API: /label/analyze ====
@@ -804,7 +922,6 @@ def analyze_label():
         result = call_gemini_with_backoff(VLM_MODEL, parts)
         text = result.text or ""
     except Exception as e:
-        # Trả lỗi 3 dòng như yêu cầu
         return jsonify(ok=False, error="Xin lỗi, có lỗi khi xử lý:\nGemini error: {0}\n{1}".format(type(e).__name__, str(e))), 502
     try:
         label = _extract_json(text)
@@ -944,15 +1061,62 @@ def _format_reco_items(items):
     for i, it in enumerate(items, 1):
         m = it["n_100g"]
         store_txt = ", ".join(f"{s['store']} ({s['district']})" for s in (it.get("stores") or [])) or "—"
+        title = f"{i}. **{it['name']}** — {it.get('brand') or 'N/A'}"  # (ẩn barcode)
         rows += [
-            f"{i}. **{it['name']}** — {it.get('brand') or 'N/A'} (#{it.get('barcode') or '—'})",
+            title,
             f"   - Điểm sức khỏe (cá nhân hoá): **{it['health_score']} / {HEALTH_SCORE_MAX}** — {it['health_level']}",
             f"   - Nutri-Score (tham khảo): {it['nutriscore']['grade']} (điểm {it['nutriscore']['points']})",
             f"   - Dinh dưỡng/100g: đường {m['sugars_g'] if m['sugars_g'] is not None else '-'} g; natri {m['sodium_mg'] if m['sodium_mg'] is not None else '-'} mg; bão hoà {m['satfat_g'] if m['satfat_g'] is not None else '-'} g; protein {m['protein_g'] if m['protein_g'] is not None else '-'} g; {m['kcal'] if m['kcal'] is not None else '-'} kcal",
             f"   - Lý do: {', '.join(it['reasons']) or '—'}",
             f"   - Có thể tìm tại (Hà Nội): {store_txt}"
         ]
+        if it.get("image"):
+            rows.append(f"   \n   ![]({it['image']})")  # ảnh minh hoạ
     return rows
+
+@app.route("/asr", methods=["POST", "OPTIONS"])
+def asr_proxy():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    if not ASR_UPSTREAM:
+        return jsonify(ok=False, error="ASR_URL is not configured on server (.env)"), 503
+
+    # Nhận multipart (field: file | audio | voice) hoặc base64 (audio_base64, file_base64)
+    if request.content_type and "multipart/form-data" in request.content_type:
+        f = (request.files.get("file")
+             or request.files.get("audio")
+             or request.files.get("voice"))
+        if not f or f.filename == "":
+            return jsonify(ok=False, error="missing 'file' field"), 400
+        files = {"file": (f.filename, f.stream, f.mimetype or "audio/m4a")}
+        data = None
+    else:
+        data = request.get_json(silent=True) or {}
+        b64 = data.get("audio_base64") or data.get("file_base64") or ""
+        if not b64:
+            return jsonify(ok=False, error="missing audio data"), 400
+        if b64.startswith("data:"):
+            b64 = b64.split(",", 1)[1]
+        raw = base64.b64decode(b64, validate=True)
+        files = {"file": ("upload.m4a", io.BytesIO(raw), "audio/m4a")}
+
+    try:
+        r = requests.post(ASR_UPSTREAM, files=files, json=data if files is None else None, timeout=60)
+        ct = r.headers.get("content-type", "")
+        if "application/json" in ct:
+            js = r.json()
+            text = js.get("text") or js.get("transcript") or js.get("result") or ""
+        else:
+            text = r.text or ""
+
+        if not r.ok:
+            return jsonify(ok=False, status=r.status_code, error=text[:1000]), r.status_code
+
+        return jsonify(ok=True, text=text)
+    except Exception as e:
+        return jsonify(ok=False, error=f"ASR proxy error: {e}"), 502
+
 
 @app.route("/chat", methods=["POST","OPTIONS"])
 def chat():
@@ -977,20 +1141,16 @@ def chat():
     intent = _detect_intent(message)
     built_in_reply = None
 
-    # === Built-in hiển thị dữ liệu thô ===
     if intent == "SHOW_PROFILE":
         built_in_reply = _render_profile_md(profile)
     elif intent == "SHOW_INGREDIENTS":
         built_in_reply = _render_ingredients_md(label)
     elif intent == "SHOW_NUTRITION":
         built_in_reply = _render_nutrition_md(label)
-
-    # === Đề xuất & bổ sung (5 mục/lần, cùng format) ===
     elif intent == "RECOMMEND":
-        # lấy cache nếu đã tính cho chat_id
         state = RECO_STATE.get(chat_id)
         if not state:
-            rec = _recommend_core(profile, label, k=50)  # chuẩn bị trước 50 để phân trang mượt
+            rec = _recommend_core(profile, label, k=50)
             if not rec.get("ok"):
                 built_in_reply = "Xin lỗi, catalog chưa sẵn sàng để đề xuất."
             else:
@@ -1001,7 +1161,7 @@ def chat():
             start = state["index"]
             end = min(start + 5, len(state["items"]))
             batch = state["items"][start:end]
-            state["index"] = end  # cập nhật con trỏ cho lệnh “Bổ sung…”
+            state["index"] = end
             rows = []
             rows.append("**Trả lời nhanh**: Dưới đây là các sản phẩm thay thế xếp từ phù hợp nhất trở xuống.")
             rows.append(f"- Nhóm danh mục: {state.get('cat','—')}")
@@ -1021,7 +1181,6 @@ def chat():
             json.dump(chat_dump, fp, ensure_ascii=False, indent=2)
         return jsonify(ok=True, chat_id=chat_id, reply_markdown=reply)
 
-    # === LLM fallback ===
     facts = _summarize_profile_facts(profile)
     metrics = _extract_metrics(label)
     targets = _targets_for_profile(profile)
@@ -1057,4 +1216,5 @@ def chat():
 
 # ==== Run ====
 if __name__ == "__main__":
+    print(f"[INFO] Using catalog: {CATALOG_PATH}")
     app.run(host="0.0.0.0", port=PORT, debug=True)

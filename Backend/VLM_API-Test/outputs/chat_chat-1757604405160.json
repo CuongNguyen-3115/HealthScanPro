@@ -1,0 +1,26 @@
+{
+  "chat_id": "chat-1757604405160",
+  "updated_at": "2025-09-11T15:26:49.326995",
+  "history": [
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-11T15:26:47.940267"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: 2025-09-11T14:33:48.302Z\n1. Thông tin cơ bản:\n   - Tuổi: 25\n   - Giới tính: Nam\n   - Cân nặng: 70 kg\n   - Chiều cao: 165 cm\n   - Mức vận động: Vận động trung bình (3–5 ngày/tuần)\n2. Tình trạng/bệnh nền:\n   - Tiểu đường, Cảm lạnh\n3. Dị ứng:\n   - Trứng, Đậu nành\n4. Mục tiêu sức khỏe:\n   - Tăng cơ bắp, Ngủ ngon hơn, Tăng năng lượng, Đẹp trai hơn\n",
+      "ts": "2025-09-11T15:26:47.942251"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-11T15:26:49.326807"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần: Chưa có nhãn đã quét. Vào **Quét sản phẩm** để chụp nhãn.",
+      "ts": "2025-09-11T15:26:49.326978"
+    }
+  ]
+}
