@@ -1,0 +1,31 @@
+{
+  "chat_id": "chat-1757535651041",
+  "updated_at": "2025-09-10T20:29:44.630673",
+  "history": [
+    {
+      "role": "user",
+      "text": "Bổ sung sản phẩm thay thế",
+      "ts": "2025-09-10T20:21:03.201156"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Dưới đây là các sản phẩm thay thế xếp từ phù hợp nhất trở xuống.\n- Nhóm danh mục: noodle\n\n1. **Hương Xá Xị chai** — Fanta,Coca-Cola Company (#8935049510833)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 4.6 g; natri 23 mg; bão hoà 0.0 g; protein 0.0 g; 18.6 kcal\n   - Có thể tìm tại (Hà Nội): Lotte Mall West Lake Hanoi (Tây Hồ), Vincom Mega Mall Times City (WinMart) (Hai Bà Trưng), Vincom Mega Mall Royal City (WinMart) (Thanh Xuân)\n2. **Pain de mie seigle & graines** — La boulangère (#8934049798609)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -16)\n   - Dinh dưỡng/100g: đường 4.28571428571429 g; natri - mg; bão hoà 1.14285715988704 g; protein 11.9999994550432 g; 300.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n3. **Vegetarian noodles** — Fraternity (#8935005300126)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -10)\n   - Dinh dưỡng/100g: đường 3.03999996185303 g; natri - mg; bão hoà 0.400000005960464 g; protein 13.1999998092651 g; 373.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n4. **Alpin Fresh sugar free mints** — Ricola (#7610700004128)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: C (điểm 4)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.0 g; 393.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n5. **Fanta Nho Hương** — Fanta,Coca-Cola,Coca-Cola Company (#8935049501671)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 4.6 g; natri 32 mg; bão hoà 0.0 g; protein - g; 19.0 kcal\n   - Có thể tìm tại (Hà Nội): Lotte Mall West Lake Hanoi (Tây Hồ), Vincom Mega Mall Times City (WinMart) (Hai Bà Trưng), Vincom Mega Mall Royal City (WinMart) (Thanh Xuân)\n\nGõ “Bổ sung thêm sản phẩm” để xem 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-10T20:21:03.209231"
+    },
+    {
+      "role": "user",
+      "text": "Đánh giá tổng quan sản phẩm dựa trên hồ sơ sức khỏe của tôi.",
+      "ts": "2025-09-10T20:29:28.544458"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm này có phù hợp với tình trạng sức khỏe của tôi không?",
+      "ts": "2025-09-10T20:29:40.326260"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Sản phẩm này không quá phù hợp với mục tiêu tăng cơ của bạn do hàm lượng protein thấp (1.36g/20g).  Hàm lượng đường, natri và phụ gia cũng cần cân nhắc.\n\n**Đánh giá tổng quan sản phẩm:**\n\nDựa trên hồ sơ sức khoẻ và nhãn sản phẩm, đây không phải là lựa chọn lý tưởng cho mục tiêu của bạn.  \n\n- **Protein:** Hàm lượng protein (1.36g/20g) rất thấp, không đáp ứng nhu cầu tăng cơ (tiêu chí tốt hơn: ≥6-10g/khẩu phần).\n- **Đường:** Hàm lượng đường (3.64g/20g) vừa phải, tuy chưa cao nhưng vẫn nên cân nhắc nếu bạn muốn kiểm soát đường huyết tốt hơn (tiêu chí tốt hơn: ≤5g/khẩu phần).\n- **Natri:** Hàm lượng natri (126mg/20g)  vừa phải, cần lưu ý nếu bạn nhạy cảm với muối (tiêu chí tốt hơn: ≤200-400mg/khẩu phần).\n- **Chất béo bão hòa:** Hàm lượng chất béo bão hòa (1.55g/20g) ở mức vừa phải, nhưng không đáng lo ngại (tiêu chí tốt hơn: ≤2-3g/khẩu phần).\n- **Chất xơ:**  Không có chất xơ (0g/20g), không tốt cho tiêu hoá (tiêu chí tốt hơn: ≥3-5g/khẩu phần tuỳ mục tiêu).\n- **Phụ gia:** Số lượng phụ gia (5) hơi cao, có thể ảnh hưởng tiêu hoá nếu nhạy cảm (tiêu chí tốt hơn: ≤2-4).\n- **Nutri-Score:** E (điểm 22), cho thấy chất lượng dinh dưỡng kém.\n\n\n**Xếp loại:** Cần cân nhắc.  Do hàm lượng protein thấp và số lượng phụ gia cao, chỉ nên sử dụng sản phẩm này với tần suất rất hạn chế.\n\n**Gợi ý:**  Để đạt được mục tiêu tăng cơ, bạn nên tìm kiếm các sản phẩm có hàm lượng protein cao hơn, chẳng hạn như thịt nạc, cá, trứng, các loại đậu, sữa chua Hy Lạp hoặc các loại thực phẩm bổ sung protein.  Đồng thời nên chọn những thực phẩm có ít đường, natri và phụ gia.",
+      "ts": "2025-09-10T20:29:44.630158"
+    }
+  ]
+}

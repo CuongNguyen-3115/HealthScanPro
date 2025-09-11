@@ -1,0 +1,61 @@
+{
+  "chat_id": "chat-1757535271981",
+  "updated_at": "2025-09-10T20:19:34.832297",
+  "history": [
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-10T20:14:40.290159"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: 2025-09-09T15:08:11.737Z\n1. Thông tin cơ bản:\n   - Tuổi: 21\n   - Giới tính: Nam\n   - Cân nặng: 70 kg\n   - Chiều cao: 165 cm\n   - Mức vận động: Vận động trung bình (3–5 ngày/tuần)\n2. Tình trạng/bệnh nền:\n   - cảm lạnh\n3. Dị ứng:\n   - Không có dị ứng nào\n4. Mục tiêu sức khỏe:\n   - Giảm stress, Tăng cơ bắp, Cải thiện tiêu hóa, Ngủ ngon hơn, Tăng năng lượng, đẹp trai hơn",
+      "ts": "2025-09-10T20:14:40.291169"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-10T20:14:41.114543"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần (từ nhãn)\n- Nguyên văn: Bột mì (Wheat flour) 56,00%\nĐường (Sugar) 16,00%\nTinh bột sắn (Tapioca starch) 12,50%\nDầu cọ (Palm oil) 10,60%\nNước mắm (Fish sauce) 2,30%\nMuối iốt (lodized salt) 1,20%\nTỏi (Garlic) 0,28%\nTiêu (Pepper) 0,10%\nBột ớt (Chilli Powder) 0,10%\nChất điều chỉnh độ acid (Acidity regulator) (INS 170 (i)),\nChất tạo xốp (Raising agent) (INS 450 (1), INS 500 (1), INS 503 (1))\nChất điều vị (Flavor enhancer) (INS 621)\nHương liệu tự nhiên (Natural flavour)\nPhẩm màu tổng hợp (Artificial colour) (INS 110)\n\nDanh sách parse:\n- Bột mì (56%) — [ALLERGEN] — Gluten\n- Đường (16%)\n- Tinh bột sắn (12.5%)\n- Dầu cọ (10.6%)\n- Nước mắm (2.3%)\n- Muối iốt (1.2%)\n- Tỏi (0.28%)\n- Tiêu (0.1%)\n- Bột ớt (0.1%)\n- Chất điều chỉnh độ acid — INS 170 (i)\n- Chất tạo xốp — INS 450 (1), INS 500 (1), INS 503 (1)\n- Chất điều vị — INS 621\n- Hương liệu tự nhiên\n- Phẩm màu tổng hợp — INS 110",
+      "ts": "2025-09-10T20:14:41.114682"
+    },
+    {
+      "role": "user",
+      "text": "Đánh giá tổng quan sản phẩm dựa trên hồ sơ sức khỏe của tôi.",
+      "ts": "2025-09-10T20:14:42.918243"
+    },
+    {
+      "role": "user",
+      "text": "Bổ sung sản phẩm thay thế",
+      "ts": "2025-09-10T20:19:01.173536"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Dưới đây là các sản phẩm thay thế xếp từ phù hợp nhất trở xuống.\n- Nhóm danh mục: noodle\n\n1. **Hương Xá Xị chai** — Fanta,Coca-Cola Company (#8935049510833)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 4.6 g; natri 23 mg; bão hoà 0.0 g; protein 0.0 g; 18.6 kcal\n   - Có thể tìm tại (Hà Nội): Lotte Mall West Lake Hanoi (Tây Hồ), Vincom Mega Mall Times City (WinMart) (Hai Bà Trưng), Vincom Mega Mall Royal City (WinMart) (Thanh Xuân)\n2. **Pain de mie seigle & graines** — La boulangère (#8934049798609)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -16)\n   - Dinh dưỡng/100g: đường 4.28571428571429 g; natri - mg; bão hoà 1.14285715988704 g; protein 11.9999994550432 g; 300.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n3. **Vegetarian noodles** — Fraternity (#8935005300126)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -10)\n   - Dinh dưỡng/100g: đường 3.03999996185303 g; natri - mg; bão hoà 0.400000005960464 g; protein 13.1999998092651 g; 373.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n4. **Alpin Fresh sugar free mints** — Ricola (#7610700004128)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: C (điểm 4)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.0 g; 393.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n5. **Fanta Nho Hương** — Fanta,Coca-Cola,Coca-Cola Company (#8935049501671)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 4.6 g; natri 32 mg; bão hoà 0.0 g; protein - g; 19.0 kcal\n   - Có thể tìm tại (Hà Nội): Lotte Mall West Lake Hanoi (Tây Hồ), Vincom Mega Mall Times City (WinMart) (Hai Bà Trưng), Vincom Mega Mall Royal City (WinMart) (Thanh Xuân)\n\nGõ “Bổ sung thêm sản phẩm” để xem 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-10T20:19:01.182728"
+    },
+    {
+      "role": "user",
+      "text": "Bổ sung thêm sản phẩm",
+      "ts": "2025-09-10T20:19:19.713025"
+    },
+    {
+      "role": "assistant",
+      "text": "6. **Rice Noodles** — Lotus Grand (#8938506009512)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: C (điểm 4)\n   - Dinh dưỡng/100g: đường 0.2 g; natri 100 mg; bão hoà 0.0 g; protein 0.0 g; 300.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n7. **milo** — Nestlé (#8934804039220)\n   - Điểm sức khỏe: **5.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -1)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 1.68 g; protein 5.2 g; 159.0 kcal\n   - Có thể tìm tại (Hà Nội): Vincom Mega Mall Times City (WinMart) (Hai Bà Trưng), Vincom Mega Mall Royal City (WinMart) (Thanh Xuân), Vincom Center Bà Triệu (WinMart) (Hai Bà Trưng)\n8. **Seasoned Fish Sauce** — Mega Chef (#8857118730648)\n   - Điểm sức khỏe: **4.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -1)\n   - Dinh dưỡng/100g: đường 33.3 g; natri 0 mg; bão hoà 0.0 g; protein 13.3 g; 200.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n9. **Salami** — volys (#5411431831951)\n   - Điểm sức khỏe: **4.0 / 8.0** — Phù hợp; Nutri-Score: D (điểm 13)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 1000 mg; bão hoà 0.89999997615814 g; protein 15.0 g; 258.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n10. **Mixed Nuts 4+4** — Gulu Foods (#8936221090471)\n   - Điểm sức khỏe: **4.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -14)\n   - Dinh dưỡng/100g: đường - g; natri 7 mg; bão hoà - g; protein 10.1 g; 524.74 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n\nGõ “Bổ sung thêm sản phẩm” để xem 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-10T20:19:19.713765"
+    },
+    {
+      "role": "user",
+      "text": "“Bổ sung thêm sản phẩm”",
+      "ts": "2025-09-10T20:19:34.832055"
+    },
+    {
+      "role": "assistant",
+      "text": "11. **Nouille de blé mi trung kho** — Trai dao tien (#8936043260595)\n   - Điểm sức khỏe: **4.0 / 8.0** — Phù hợp; Nutri-Score: A (điểm -5)\n   - Dinh dưỡng/100g: đường 7.2 g; natri - mg; bão hoà 0.03 g; protein 11.0 g; 345.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n12. **Tropicana slim** — tropicana slim (#0749921202055)\n   - Điểm sức khỏe: **4.0 / 8.0** — Phù hợp; Nutri-Score: B (điểm 0)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà - g; protein 0.0 g; 0.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n13. **Xúc Xích Salami Tiêu Đỏ** — Ông Già Ika (#8938500490460)\n   - Điểm sức khỏe: **3.0 / 8.0** — Cần cân nhắc; Nutri-Score: D (điểm 12)\n   - Dinh dưỡng/100g: đường 0.93 g; natri 663 mg; bão hoà - g; protein 25.8 g; 475.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n14. **Mixed Vegetables** — Edgell (#9310082162024)\n   - Điểm sức khỏe: **3.0 / 8.0** — Cần cân nhắc; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 1.3 g; natri 242 mg; bão hoà 0.1 g; protein 2.2 g; 53.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n15. **Laktose frei Joghurt mild** — Milbona (#8933389658093)\n   - Điểm sức khỏe: **3.0 / 8.0** — Cần cân nhắc; Nutri-Score: B (điểm 1)\n   - Dinh dưỡng/100g: đường 4.90000009536743 g; natri - mg; bão hoà 2.29999995231628 g; protein 4.0 g; 70.0 kcal\n   - Có thể tìm tại (Hà Nội): AEON Mall Long Biên (Long Biên), AEON Mall Hà Đông (Hà Đông), Lotte Mall West Lake Hanoi (Tây Hồ)\n\nGõ “Bổ sung thêm sản phẩm” để xem 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-10T20:19:34.832291"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "chat_id": "chat-1757265119554",
+  "updated_at": "2025-09-08T08:45:58.703453",
+  "history": [
+    {
+      "role": "user",
+      "text": "Hãy đánh giá tổng quát sản phẩm dựa trên hồ sơ sức khỏe của tôi và thành phần + giá trị dinh dưỡng đã quét.",
+      "ts": "2025-09-07T17:12:03.741697"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Sản phẩm này chứa nhiều chất gây dị ứng như bột mì, sữa, trứng nên bạn cần tránh nếu có dị ứng với các thành phần này. Hàm lượng đường cũng khá cao (12g/khẩu phần), bạn nên dùng với lượng vừa phải.\n\n**Thành phần gây dị ứng:**\n\n* **Bột mì:** Có thể gây dị ứng cho người bị bệnh Celiac hoặc không dung nạp gluten.\n* **Sữa bột nguyên kem & Protein sữa:** Chứa casein và whey, có thể gây dị ứng cho người không dung nạp lactose hoặc dị ứng sữa.\n* **Trứng:** Có thể gây dị ứng cho người mẫn cảm với trứng.\n\n\n**Giá trị dinh dưỡng (một khẩu phần 36.3g):**\n\n* Năng lượng: 160 kcal\n* Chất béo: 6g\n* Natri: 110mg\n* Carbohydrate: 24g\n* Đường: 12g\n* Protein: 2g\n\n**Đánh giá tổng quan:**\n\nSản phẩm này có hàm lượng đường khá cao (12g/khẩu phần), bạn nên hạn chế dùng nếu bạn đang có mục tiêu giảm cân hoặc kiểm soát đường huyết.  Hàm lượng natri ở mức vừa phải.  Quan trọng hơn, sản phẩm chứa nhiều chất gây dị ứng phổ biến. Vì hồ sơ sức khỏe của bạn hiện không ghi nhận dị ứng nào, nhưng bạn vẫn nên dùng với lượng vừa phải và quan sát phản ứng cơ thể.  Nếu xuất hiện bất kỳ triệu chứng dị ứng nào, hãy ngừng sử dụng và tham khảo ý kiến bác sĩ.\n\n**Gợi ý thay thế:** Nếu muốn tìm sản phẩm tương tự nhưng ít đường và không chứa các chất gây dị ứng trên, bạn có thể tìm kiếm các loại bánh quy ít đường, không chứa sữa, trứng và gluten tại siêu thị.  Đọc kỹ thành phần trước khi mua nhé!",
+      "ts": "2025-09-07T17:12:07.527203"
+    },
+    {
+      "role": "user",
+      "text": "Trái đất có bao nhiều phần trăm là nước",
+      "ts": "2025-09-08T08:45:56.420783"
+    },
+    {
+      "role": "assistant",
+      "text": "Tôi xin lỗi, nhưng tôi không thể trả lời câu hỏi này. Là HealthScan AI, chuyên gia dinh dưỡng lâm sàng & “coach” mua sắm siêu thị, kiến thức của tôi tập trung vào sức khoẻ, dinh dưỡng và thực phẩm.  Tôi không có thông tin về tỷ lệ phần trăm nước trên Trái Đất.",
+      "ts": "2025-09-08T08:45:58.701569"
+    }
+  ]
+}

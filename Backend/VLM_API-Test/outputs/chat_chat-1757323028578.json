@@ -1,0 +1,66 @@
+{
+  "chat_id": "chat-1757323028578",
+  "updated_at": "2025-09-08T09:21:43.048592",
+  "history": [
+    {
+      "role": "user",
+      "text": "Sản phẩm này có phù hợp cho trẻ em, người già hoặc phụ nữ mang thai không? Cần lưu ý gì?",
+      "ts": "2025-09-08T09:19:34.746302"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**:  Không có thông tin cụ thể trên nhãn hoặc hồ sơ để xác định sản phẩm này có phù hợp cho trẻ em, người già hay phụ nữ mang thai không.  Tuy nhiên, cần lưu ý sản phẩm chứa nhiều đường (12g/khẩu phần) và một số chất gây dị ứng (bột mì, sữa, trứng).\n\n**LIÊN QUAN**:\n\n* **Trẻ em**:  Hàm lượng đường cao có thể không thích hợp cho trẻ em.  Nên tham khảo ý kiến bác sĩ nhi khoa.  Cần kiểm tra xem trẻ có dị ứng với sữa, trứng, hoặc bột mì hay không.\n* **Người già**:  Cần xem xét tình trạng sức khỏe của người già, đặc biệt nếu có vấn đề về tiêu hóa, tim mạch, hoặc tiểu đường.  Hàm lượng đường và chất béo cần được cân nhắc.\n* **Phụ nữ mang thai**:  Sản phẩm có chứa một số chất gây dị ứng, do đó phụ nữ mang thai cần đặc biệt lưu ý và tham khảo ý kiến bác sĩ.  Hàm lượng đường cao cũng cần được cân nhắc.\n\n**Lưu ý chung**:  Sản phẩm chứa gluten, sữa và trứng.  Những người dị ứng với các chất này cần tránh sử dụng.  Hàm lượng đường cao (12g/khẩu phần) nên được lưu ý, đặc biệt đối với người bệnh tiểu đường hoặc có nguy cơ mắc bệnh tiểu đường.  Để có lời khuyên chính xác hơn, hãy tham khảo ý kiến chuyên gia y tế hoặc dinh dưỡng.",
+      "ts": "2025-09-08T09:19:37.809341"
+    },
+    {
+      "role": "user",
+      "text": "Hãy đánh giá tổng quát sản phẩm dựa trên hồ sơ sức khỏe của tôi và thành phần + giá trị dinh dưỡng đã quét.",
+      "ts": "2025-09-08T09:20:53.336411"
+    },
+    {
+      "role": "assistant",
+      "text": "## 🩺 Hồ sơ sức khỏe của bạn\n- **Cập nhật**: 2025-09-07T17:11:15.555Z\n- **basic**: {'age': '21', 'gender': 'male', 'genderLabel': 'Nam', 'weight': '70', 'height': '165', 'activityCode': '3', 'activityLevel': 'Vận động trung bình (3–5 ngày/tuần)'}\n- **conditions**: {'selected': [], 'other': ['Cảm lạnh']}\n- **allergies**: []\n- **goals**: {'selected': ['Cải thiện tiêu hóa', 'Tăng năng lượng', 'Ngủ ngon hơn', 'Tăng cơ bắp', 'Giảm stress'], 'note': 'Đẹp trai hơn'}",
+      "ts": "2025-09-08T09:20:53.336460"
+    },
+    {
+      "role": "user",
+      "text": "Có sản phẩm nào tốt hơn không?",
+      "ts": "2025-09-08T09:20:56.475322"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Tôi cần thêm thông tin về sở thích, khẩu vị và mục tiêu cụ thể của bạn để đề xuất sản phẩm tốt hơn.  Hiện tại, tôi chỉ có thông tin về sản phẩm bạn vừa quét, chưa đủ để so sánh.\n\n\n**LIÊN QUAN**:  Để tôi có thể gợi ý sản phẩm thay thế phù hợp hơn, vui lòng cho biết:\n\n* Bạn muốn tìm sản phẩm thuộc nhóm nào (bánh, kẹo, đồ uống,...)?\n* Bạn thích hương vị như thế nào?\n* Bạn muốn sản phẩm có hàm lượng đường, chất béo, natri như thế nào (thấp, trung bình, cao)?\n* Mục tiêu sức khỏe cụ thể của bạn khi tìm sản phẩm thay thế là gì (giảm cân, tăng cơ, bổ sung vitamin,...)?",
+      "ts": "2025-09-08T09:20:58.427609"
+    },
+    {
+      "role": "user",
+      "text": "bánh",
+      "ts": "2025-09-08T09:21:13.466878"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**:  Tôi cần thêm thông tin để đề xuất bánh phù hợp với bạn. Bạn thích loại bánh nào (bánh ngọt, bánh mặn, bánh quy, bánh mì,...), hương vị ra sao và có yêu cầu đặc biệt về thành phần (ví dụ: ít đường, không gluten) không?\n\n\n**LIÊN QUAN**:  Hiện tại, tôi chỉ có thông tin về một sản phẩm bánh, chưa đủ để so sánh và đưa ra đề xuất tốt hơn. Vui lòng cung cấp thêm thông tin để tôi hỗ trợ bạn hiệu quả hơn.",
+      "ts": "2025-09-08T09:21:14.887777"
+    },
+    {
+      "role": "user",
+      "text": "ngọt",
+      "ts": "2025-09-08T09:21:22.977867"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**:  Tôi cần thêm thông tin chi tiết về loại bánh ngọt bạn muốn (ví dụ: bánh bông lan, bánh quy, cupcake...).  Vui lòng cho biết sở thích về hương vị, thành phần (ví dụ: ít đường, không gluten) và bất kỳ yêu cầu đặc biệt nào khác.  Tôi sẽ giúp bạn tìm sản phẩm phù hợp.\n\n**LIÊN QUAN**:  Để tìm được bánh ngọt phù hợp, bạn cần cho tôi biết thêm thông tin, ví dụ:\n\n* **Loại bánh**: Bánh bông lan, bánh quy, bánh gato, bánh nướng,...\n* **Hương vị**: Sôcôla, vani, dâu tây, trà xanh,...\n* **Yêu cầu đặc biệt**: Ít đường, không gluten, không sữa, không trứng,...\n* **Mục tiêu sức khỏe**: Giảm cân, kiểm soát đường huyết,...\n\nChỉ với thông tin \"bánh ngọt\", tôi chưa thể đưa ra bất kỳ gợi ý cụ thể nào.",
+      "ts": "2025-09-08T09:21:25.051415"
+    },
+    {
+      "role": "user",
+      "text": "Thành phần nào trong sản phẩm này có thể gây dị ứng?",
+      "ts": "2025-09-08T09:21:43.046919"
+    },
+    {
+      "role": "assistant",
+      "text": "## 🧾 Thành phần (từ nhãn)\n> BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\n**Danh sách parse:**\n- Bột mì — **[ALLERGEN]**\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — *có chất nhũ hoá (471)*\n- Chất béo thực vật — *có chất nhũ hoá (492, 322(i))*\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — **[ALLERGEN]**\n- Trứng — **[ALLERGEN]**\n- Chất tạo xốp — *(500(ii), 503(ii))*\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — *(1442, 415)*\n- Chất điều chỉnh độ acid — *(341(i))*\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — *(322(i), 476)*\n- Muối i-ốt\n- Protein sữa — **[ALLERGEN]**",
+      "ts": "2025-09-08T09:21:43.046954"
+    }
+  ]
+}

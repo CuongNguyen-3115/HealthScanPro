@@ -1,0 +1,46 @@
+{
+  "chat_id": "chat-1757322308731",
+  "updated_at": "2025-09-08T09:06:13.181723",
+  "history": [
+    {
+      "role": "user",
+      "text": "Cho tôi xem hồ sơ sức khỏe",
+      "ts": "2025-09-08T09:05:11.868798"
+    },
+    {
+      "role": "assistant",
+      "text": "## 🩺 Hồ sơ sức khỏe của bạn\n- **Cập nhật**: 2025-09-07T17:11:15.555Z\n- **basic**: {'age': '21', 'gender': 'male', 'genderLabel': 'Nam', 'weight': '70', 'height': '165', 'activityCode': '3', 'activityLevel': 'Vận động trung bình (3–5 ngày/tuần)'}\n- **conditions**: {'selected': [], 'other': ['Cảm lạnh']}\n- **allergies**: []\n- **goals**: {'selected': ['Cải thiện tiêu hóa', 'Tăng năng lượng', 'Ngủ ngon hơn', 'Tăng cơ bắp', 'Giảm stress'], 'note': 'Đẹp trai hơn'}",
+      "ts": "2025-09-08T09:05:11.869419"
+    },
+    {
+      "role": "user",
+      "text": "Hiển thị thành phần",
+      "ts": "2025-09-08T09:05:34.916746"
+    },
+    {
+      "role": "assistant",
+      "text": "## 🧾 Thành phần (từ nhãn)\n> BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\n**Danh sách parse:**\n- Bột mì — **[ALLERGEN]**\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — *có chất nhũ hoá (471)*\n- Chất béo thực vật — *có chất nhũ hoá (492, 322(i))*\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — **[ALLERGEN]**\n- Trứng — **[ALLERGEN]**\n- Chất tạo xốp — *(500(ii), 503(ii))*\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — *(1442, 415)*\n- Chất điều chỉnh độ acid — *(341(i))*\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — *(322(i), 476)*\n- Muối i-ốt\n- Protein sữa — **[ALLERGEN]**",
+      "ts": "2025-09-08T09:05:34.916858"
+    },
+    {
+      "role": "user",
+      "text": "Xem giá trị dinh dưỡng",
+      "ts": "2025-09-08T09:05:47.889837"
+    },
+    {
+      "role": "assistant",
+      "text": "## 🍽️ Giá trị dinh dưỡng\n- **Khẩu phần**: 36,3 g\n- **Số khẩu phần/hộp**: 2\n- **Calories**: 160 kcal\n\n| Chỉ tiêu | Lượng | %DV |\n|---|---:|---:|\n| Chất béo | 6 g |  |\n| Natri | 110 mg |  |\n| Carbohydrat | 24 g |  |\n| Đường tổng số | 12 g |  |\n| Chất đạm | 2 g |  |\n\n### 📊 Minh hoạ nhanh\n- Natri:  `████░░░░░░░░░░░░` 110mg / mốc ~400 mg/khẩu phần",
+      "ts": "2025-09-08T09:05:47.889902"
+    },
+    {
+      "role": "user",
+      "text": "Tổng kết ngắn gọn",
+      "ts": "2025-09-08T09:06:10.900986"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Sản phẩm này chứa nhiều đường (12g/khẩu phần) và có thể gây dị ứng cho người mẫn cảm với gluten, sữa và trứng.  Lượng natri (110mg/khẩu phần) tương đối thấp.\n\n## 📝 Tổng kết ngắn gọn\n\nSản phẩm có thành phần chính là bột mì, đường, sữa bột, trứng và bột cacao.  Lưu ý:\n\n* **Dị ứng**: Chứa gluten (bột mì), sữa (sữa bột, protein sữa) và trứng.  Người dị ứng cần tránh.\n* **Đường**: Hàm lượng đường khá cao (12g/36.3g), nên hạn chế sử dụng nếu bạn có mục tiêu kiểm soát cân nặng hoặc đường huyết.\n* **Natri**: Hàm lượng natri thấp (110mg/khẩu phần).\n\n**LIÊN QUAN**:  Để có đánh giá dinh dưỡng đầy đủ hơn, cần biết % giá trị dinh dưỡng hàng ngày (%DV) của các chất trên nhãn.  Nếu bạn có bất kỳ lo ngại sức khỏe nào khác, hãy tham khảo ý kiến bác sĩ hoặc chuyên gia dinh dưỡng.",
+      "ts": "2025-09-08T09:06:13.181072"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "chat_id": "chat-1757351710668",
+  "updated_at": "2025-09-08T17:16:38.654922",
+  "history": [
+    {
+      "role": "user",
+      "text": "Gợi ý lựa chọn lành mạnh hơn cùng nhóm sản phẩm.",
+      "ts": "2025-09-08T17:15:13.289806"
+    },
+    {
+      "role": "user",
+      "text": "Gợi ý lựa chọn lành mạnh hơn cùng nhóm sản phẩm.",
+      "ts": "2025-09-08T17:15:18.899120"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm này có an toàn với dị ứng của tôi không?",
+      "ts": "2025-09-08T17:16:21.819691"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm này có an toàn với dị ứng của tôi không?",
+      "ts": "2025-09-08T17:16:28.123455"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-08T17:16:38.653722"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần (từ nhãn)\n- Nguyên văn: BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\nDanh sách parse:\n- Bột mì — [ALLERGEN]\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — có chứa chất nhũ hoá (471)\n- Chất béo thực vật — có chứa chất nhũ hoá (492, 322(i))\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — [ALLERGEN]\n- Trứng — [ALLERGEN]\n- Chất tạo xốp — (500(ii), 503(ii))\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — (1442, 415)\n- Chất điều chỉnh độ acid — (341(i))\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — (322(i), 476)\n- Muối i-ốt\n- Protein sữa — [ALLERGEN]",
+      "ts": "2025-09-08T17:16:38.654112"
+    }
+  ]
+}

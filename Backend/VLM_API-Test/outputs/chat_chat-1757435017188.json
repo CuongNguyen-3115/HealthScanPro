@@ -1,0 +1,16 @@
+{
+  "chat_id": "chat-1757435017188",
+  "updated_at": "2025-09-09T16:43:50.763124",
+  "history": [
+    {
+      "role": "user",
+      "text": "Sản phẩm này có an toàn với dị ứng của tôi không?",
+      "ts": "2025-09-09T16:43:47.714655"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh:**  Theo hồ sơ bạn không có dị ứng nào, và sản phẩm này có chứa một số chất gây dị ứng như sữa, trứng và lúa mì (bột mì).  Tuy nhiên,  việc an toàn hay không phụ thuộc vào mức độ nghiêm trọng dị ứng của bạn.\n\nVì hồ sơ bạn ghi là không có dị ứng nào, nên về mặt lý thuyết sản phẩm này không gây nguy hiểm.  Tuy nhiên, nhãn sản phẩm cảnh báo có chứa sữa, trứng và lúa mì. Nếu bạn có bất kỳ phản ứng dị ứng nào dù là nhẹ nhất với các chất này, tôi khuyên bạn nên tránh sử dụng sản phẩm.  Để chắc chắn hơn, tốt nhất bạn nên tham khảo ý kiến bác sĩ hoặc chuyên gia dị ứng trước khi dùng.  Tôi không thể đưa ra khuyến nghị y tế cụ thể.",
+      "ts": "2025-09-09T16:43:50.762087"
+    }
+  ]
+}
