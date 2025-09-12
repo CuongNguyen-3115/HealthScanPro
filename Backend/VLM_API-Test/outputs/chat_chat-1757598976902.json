@@ -1,0 +1,56 @@
+{
+  "chat_id": "chat-1757598976902",
+  "updated_at": "2025-09-11T13:58:38.548872",
+  "history": [
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-11T13:56:19.042432"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: 2025-09-11T13:56:13.777Z\n1. Thông tin cơ bản:\n   - Tuổi: 21\n   - Giới tính: Nam\n   - Cân nặng: 70 kg\n   - Chiều cao: 165 cm\n   - Mức vận động: Vận động trung bình (3–5 ngày/tuần)\n2. Tình trạng/bệnh nền:\n   - Tiểu đường, Huyết áp cao, Cảm lạnh\n3. Dị ứng:\n   - Đậu phộng, Trứng\n4. Mục tiêu sức khỏe:\n   - Cải thiện tiêu hóa, Tăng năng lượng, Ngủ ngon hơn, Tăng cơ bắp, Giảm stress, Đẹp trai hơn",
+      "ts": "2025-09-11T13:56:19.042644"
+    },
+    {
+      "role": "user",
+      "text": "Xem thành phần",
+      "ts": "2025-09-11T13:56:20.717187"
+    },
+    {
+      "role": "assistant",
+      "text": "Thành phần (từ nhãn)\n- Nguyên văn: BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA\n\nDanh sách parse:\n- Bột mì — [ALLERGEN]\n- Đường\n- Mạch nha glucose\n- Shortening thực vật — có chứa chất nhũ hoá (471)\n- Chất béo thực vật — có chứa chất nhũ hoá (492, 322(i))\n- Bột cacao (2,8%%)\n- Sữa bột nguyên kem — [ALLERGEN]\n- Trứng — [ALLERGEN]\n- Chất tạo xốp — (500(ii), 503(ii))\n- Đường dextrose\n- Gelatin\n- Muối\n- Hỗn hợp bột cacao và bơ cacao (0,2%%)\n- Chất ổn định — (1442, 415)\n- Chất điều chỉnh độ acid — (341(i))\n- Hương liệu tổng hợp (vani)\n- Chất nhũ hoá — (322(i), 476)\n- Muối i-ốt\n- Protein sữa — [ALLERGEN]",
+      "ts": "2025-09-11T13:56:20.717646"
+    },
+    {
+      "role": "user",
+      "text": "Đánh giá tổng quan sản phẩm dựa trên hồ sơ sức khỏe của tôi.",
+      "ts": "2025-09-11T13:56:23.729083"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh:** Sản phẩm này không phù hợp với tình trạng sức khỏe hiện tại của bạn do hàm lượng đường cao và chứa chất béo chuyển hóa.  Nó cũng thiếu protein và chất xơ.\n\n**Đánh giá tổng quan sản phẩm:**\n\nDựa trên hồ sơ sức khỏe của bạn (tiểu đường, huyết áp cao, dị ứng trứng và đậu phộng) và thông tin nhãn sản phẩm, tôi đánh giá sản phẩm này ở mức **4) Tránh**.\n\n- **Đường:** Sản phẩm có 12g đường/khẩu phần, vượt xa ngưỡng khuyến nghị (≤5g) và ngưỡng cảnh báo cao (≥12g) của bạn. Điều này rất không tốt cho bệnh tiểu đường.\n- **Natri:**  Hàm lượng natri (110mg/khẩu phần) tương đối thấp và nằm trong ngưỡng tốt (≤200mg). Tuy nhiên, cần lưu ý chế độ ăn tổng thể để kiểm soát huyết áp.\n- **Chất béo bão hòa:**  Thông tin này không có trong nhãn.\n- **Chất béo chuyển hóa (Trans fat):** Sản phẩm **có chứa** chất béo chuyển hóa, đây là một yếu tố nguy cơ cao đối với bệnh tim mạch.\n- **Protein:** Hàm lượng protein (2g/khẩu phần) rất thấp, không đáp ứng nhu cầu của bạn (≥10g) để tăng cơ bắp.\n- **Chất xơ:** Thông tin này không có trong nhãn.  Chất xơ rất cần thiết cho tiêu hóa.\n- **Phụ gia:** Sản phẩm chứa 1 loại phụ gia, nằm trong ngưỡng chấp nhận được (≤4). Tuy nhiên,  việc sử dụng nhiều phụ gia có thể ảnh hưởng đến tiêu hóa của một số người.\n- **Dị ứng:** Sản phẩm có chứa trứng, đây là chất gây dị ứng của bạn.  **Tuyệt đối tránh sử dụng**.\n\n**Tiêu chí chọn tốt hơn:** Để cải thiện sức khỏe, đặc biệt với tình trạng tiểu đường và huyết áp cao của bạn, hãy tìm kiếm các sản phẩm có:\n\n- Đường ≤ 5g/khẩu phần\n- Natri ≤ 200-400mg/khẩu phần\n- Chất béo bão hòa ≤ 2-3g/khẩu phần\n- Không có chất béo chuyển hóa (trans fat)\n- Protein ≥ 6-10g/khẩu phần\n- Chất xơ ≥ 3-5g/khẩu phần\n- Số lượng phụ gia ≤ 2-4\n\n**Gợi ý sản phẩm thay thế:**  (Tôi cần thông tin về các sản phẩm thay thế để có thể đưa ra gợi ý chính xác).",
+      "ts": "2025-09-11T13:56:31.551402"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm thay thế",
+      "ts": "2025-09-11T13:57:55.831696"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Dưới đây là các sản phẩm thay thế xếp từ phù hợp nhất trở xuống.\n- Nhóm danh mục: milk\n\n1. **Yến mạch ăn liền** — quaker\n   - Điểm sức khỏe (cá nhân hoá): **7.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): A (điểm -1)\n   - Dinh dưỡng/100g: đường 1.14 g; natri 3 mg; bão hoà 1.71 g; protein 12.3 g; 369.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g), Protein cao (≥10g/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/955/617/480/2113/front_ja.4.400.jpg)\n2. **Đậu Whole Green Lentils** — Mc Kenzie’s\n   - Điểm sức khỏe (cá nhân hoá): **7.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): A (điểm -6)\n   - Dinh dưỡng/100g: đường 1.3 g; natri 5 mg; bão hoà 1.0 g; protein 27.6 g; - kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g), Protein cao (≥10g/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/931/006/112/1806/front_fr.3.400.jpg)\n3. **Đậu hữu cơ** — Lotus\n   - Điểm sức khỏe (cá nhân hoá): **6.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): B (điểm 2)\n   - Dinh dưỡng/100g: đường 6.0 g; natri 4 mg; bão hoà 2.5 g; protein 34.0 g; - kcal\n   - Lý do: Đường trung bình, Natri thấp (≤120mg/100g), Protein cao (≥10g/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/931/712/763/8254/front_en.3.400.jpg)\n4. **Bánh Ăn Dặm Nestle Gerber Puffs Mỹ Hình Ngôi Sao** — Gerber\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): D (điểm 13)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.0 g; 5100.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/001/500/004/5203/front_en.62.400.jpg)\n5. **Tương ớt chínu** — N/A\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): C (điểm 3)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.7 g; 56.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/893/613/616/1143/front_fr.3.400.jpg)\n\n- Nhập “Bổ sung sản phẩm thay thế” để xem thêm 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-11T13:57:55.841488"
+    },
+    {
+      "role": "user",
+      "text": "Sản phẩm thay thế",
+      "ts": "2025-09-11T13:58:38.548714"
+    },
+    {
+      "role": "assistant",
+      "text": "**Trả lời nhanh**: Dưới đây là các sản phẩm thay thế xếp từ phù hợp nhất trở xuống.\n- Nhóm danh mục: milk\n\n1. **Mayonnaise** — Simply\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): D (điểm 11)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.6 g; 600.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/893/613/436/3631/front_fr.6.400.jpg)\n2. **snack Swing vị Bít tết** — Orion\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): C (điểm 5)\n   - Dinh dưỡng/100g: đường 3.0 g; natri 0 mg; bão hoà 0.0 g; protein 7.0 g; 560.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): Lotte Mall West Lake Hanoi (Tây Hồ), Lotte Center Hanoi (Ba Đình), GO! Thăng Long (Big C Trần Duy Hưng) (Cầu Giấy)\n   \n   ![](https://images.openfoodfacts.org/images/products/893/603/602/0977/front_vi.7.400.jpg)\n3. **SỮA HẠT HẠNH NHÂN NGUYÊN CHẤT ALMOND MILK** — 137 degrees, 137 ดีกรี\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): C (điểm 3)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 14 mg; bão hoà 0.278 g; protein 1.11 g; 38.9 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/885/476/195/1383/front_en.43.400.jpg)\n4. **Aquafina** — N/A\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): C (điểm 3)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.0 g; 0.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/893/458/806/3053/front_vi.4.400.jpg)\n5. **G7 Instant Coffee** — Trung Nguyen\n   - Điểm sức khỏe (cá nhân hoá): **5.0 / 8.0** — Phù hợp\n   - Nutri-Score (tham khảo): C (điểm 3)\n   - Dinh dưỡng/100g: đường 0.0 g; natri 0 mg; bão hoà 0.0 g; protein 0.0 g; 5.0 kcal\n   - Lý do: Đường thấp (≤5g/100g), Natri thấp (≤120mg/100g)\n   - Có thể tìm tại (Hà Nội): —\n   \n   ![](https://images.openfoodfacts.org/images/products/893/502/414/0147/front_fr.3.400.jpg)\n\n- Nhập “Bổ sung sản phẩm thay thế” để xem thêm 5 lựa chọn tiếp theo.",
+      "ts": "2025-09-11T13:58:38.548867"
+    }
+  ]
+}

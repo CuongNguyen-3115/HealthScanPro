@@ -1,0 +1,16 @@
+{
+  "chat_id": "chat-1757670681481",
+  "updated_at": "2025-09-12T09:51:23.506271",
+  "history": [
+    {
+      "role": "user",
+      "text": "Xem hồ sơ",
+      "ts": "2025-09-12T09:51:23.502846"
+    },
+    {
+      "role": "assistant",
+      "text": "Hồ sơ sức khỏe của bạn\n- Cập nhật: Fri, 12 Sep 2025 08:34:36 GMT\n1. Thông tin cơ bản:\n   - Tuổi: -\n   - Giới tính: -\n   - Cân nặng: - kg\n   - Chiều cao: - cm\n   - Mức vận động: -\n2. Tình trạng/bệnh nền:\n   - Chưa ghi nhận\n3. Dị ứng:\n   - Sữa, Đậu nành, Đậu phộng, Hạt cây\n4. Mục tiêu sức khỏe:\n   - Chưa thiết lập",
+      "ts": "2025-09-12T09:51:23.506271"
+    }
+  ]
+}

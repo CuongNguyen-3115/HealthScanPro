@@ -4,12 +4,12 @@ class BackendHealthService {
   // Kiểm tra Backend có hoạt động không
   static async checkBackendHealth() {
     try {
-      console.log('Đang kiểm tra Backend tại:', `${API_BASE_URL}/health`);
+      console.log('Đang kiểm tra Backend tại:', `${API_BASE_URL}/api/health`);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 giây timeout
       
-      const response = await fetch(`${API_BASE_URL}/health`, {
+      const response = await fetch(`${API_BASE_URL}/api/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ class BackendHealthService {
   // Test upload ảnh đơn giản
   static async testImageUpload() {
     try {
-      console.log('Đang test upload ảnh tại:', `${API_BASE_URL}/test-upload`);
+      console.log('Đang test upload ảnh tại:', `${API_BASE_URL}/label/analyze`);
       
       // Tạo một ảnh test đơn giản (base64)
       const testImageBase64 = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=';
@@ -82,7 +82,7 @@ class BackendHealthService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 giây timeout
 
-      const uploadResponse = await fetch(`${API_BASE_URL}/test-upload`, {
+      const uploadResponse = await fetch(`${API_BASE_URL}/label/analyze`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -133,12 +133,12 @@ class BackendHealthService {
   // Lấy thông tin Backend
   static async getBackendInfo() {
     try {
-      console.log('Đang lấy thông tin Backend tại:', `${API_BASE_URL}/info`);
+      console.log('Đang lấy thông tin Backend tại:', `${API_BASE_URL}/_health`);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 giây timeout
       
-      const response = await fetch(`${API_BASE_URL}/info`, {
+      const response = await fetch(`${API_BASE_URL}/_health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -184,12 +184,12 @@ class BackendHealthService {
   // Kiểm tra tất cả các endpoint quan trọng
   static async checkAllEndpoints() {
     const endpoints = [
-      { name: 'Health Check', path: '/health' },
-      { name: 'Image Analysis', path: '/image-analysis/analyze' },
-      { name: 'Auth', path: '/auth/login' },
-      { name: 'Profile', path: '/profile' },
-      { name: 'Debug', path: '/debug' },
-      { name: 'Test Upload', path: '/test-upload' }
+      { name: 'Health Check', path: '/api/health' },
+      { name: 'Server Info', path: '/_health' },
+      { name: 'Auth Login', path: '/api/auth/login' },
+      { name: 'Label Analyze', path: '/label/analyze' },
+      { name: 'Advice', path: '/advice' },
+      { name: 'Recommend', path: '/recommend' }
     ];
 
     const results = [];
@@ -244,12 +244,12 @@ class BackendHealthService {
   // Lấy thông tin debug chi tiết từ Backend
   static async getDetailedDebugInfo() {
     try {
-      console.log('Đang lấy debug info tại:', `${API_BASE_URL}/debug`);
+      console.log('Đang lấy debug info tại:', `${API_BASE_URL}/_health`);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 giây timeout
       
-      const response = await fetch(`${API_BASE_URL}/debug`, {
+      const response = await fetch(`${API_BASE_URL}/_health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

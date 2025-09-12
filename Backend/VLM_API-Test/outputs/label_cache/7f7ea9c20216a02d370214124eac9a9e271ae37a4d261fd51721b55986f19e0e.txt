@@ -1,0 +1,41 @@
+THÔNG TIN NHÃN TRÍCH XUẤT
+Ngôn ngữ: vi
+
+— THÀNH PHẦN (raw) —
+BỘT MÌ, ĐƯỜNG, MẠCH NHÀ GLUCOSE, SHORTENING THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (471)), CHẤT BÉO THỰC VẬT (CÓ CHỨA CHẤT NHŨ HÓA (492, 322(i))), BỘT CACAO (2,8%), SỮA BỘT NGUYÊN KEM, TRỨNG, CHẤT TẠO XỐP (500(ii), 503(ii)), ĐƯỜNG DEXTROSE, GELATIN, MUỐI, HỖN HỢP BỘT CACAO VÀ BƠ CACAO (0,2%), CHẤT ỔN ĐỊNH (1442, 415), CHẤT ĐIỀU CHỈNH ĐỘ ACID (341(i)), HƯƠNG LIỆU TỔNG HỢP (VANI), CHẤT NHŨ HÓA (322(i), 476), MUỐI I-ỐT, PROTEIN SỮA
+
+— THÀNH PHẦN (parse) —
+- Bột mì [ALLERGEN]
+- Đường
+- Mạch nha glucose
+- Shortening thực vật — có chất nhũ hoá (471)
+- Chất béo thực vật — có chứa chất nhũ hoá (492, 322(i))
+- Bột cacao (2,8%%)
+- Sữa bột nguyên kem [ALLERGEN]
+- Trứng [ALLERGEN]
+- Chất tạo xốp — (500(ii), 503(ii))
+- Đường dextrose
+- Gelatin
+- Muối
+- Hỗn hợp bột cacao và bơ cacao (0,2%%)
+- Chất ổn định — (1442, 415)
+- Chất điều chỉnh độ acid — (341(i))
+- Hương liệu tổng hợp (vani)
+- Chất nhũ hoá — (322(i), 476)
+- Muối i-ốt
+- Protein sữa [ALLERGEN]
+
+— GIÁ TRỊ DINH DƯỠNG —
+Khẩu phần: 36,3 g
+Số khẩu phần/hộp: 2
+Calories: 160 kcal
+- Chất béo: 6 g
+- Natri: 110 mg
+- Carbohydrat: 24 g
+- Đường tổng số: 12 g
+- Chất đạm: 2 g
+
+— CẢNH BÁO —
+- có sữa
+- có trứng
+- có lúa mì

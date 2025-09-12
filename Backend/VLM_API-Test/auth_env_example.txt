@@ -1,0 +1,15 @@
+
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017
+DATABASE_NAME=healthscanpro
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here_change_this_in_production
+JWT_EXPIRATION_HOURS=24
+
+# Server Configuration
+PORT=8888
+DEBUG=True
+
+# Existing Gemini API Key
+GEMINI_API_KEY=your_gemini_api_key_here

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "extra": { "API_BASE": "http://192.168.1.13:8888" },
+    "extra": { "API_BASE": "http://192.168.0.118:8888" },
     "name": "my-expo-app",
     "slug": "my-expo-app",
     "version": "1.0.0",
@@ -11,7 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Ứng dụng cần quyền micro để ghi âm và gửi tới ASR."
+        "NSMicrophoneUsageDescription": "Ứng dụng cần quyền micro để ghi âm và gửi tới ASR.",
+        "NSCameraUsageDescription": "Ứng dụng cần quyền camera để chụp ảnh sản phẩm và phân tích thành phần."
       }
     },
     "android": {
@@ -20,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": ["RECORD_AUDIO", "MODIFY_AUDIO_SETTINGS"],
+      "permissions": ["RECORD_AUDIO", "MODIFY_AUDIO_SETTINGS", "CAMERA"],
       "usesCleartextTraffic": true
     },
     "web": {
@@ -39,7 +40,8 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-barcode-scanner"
+      "expo-barcode-scanner",
+      "expo-camera"
     ],
     "experiments": {
       "typedRoutes": true

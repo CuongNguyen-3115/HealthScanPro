@@ -1,0 +1,151 @@
+{
+  "language": "vi",
+  "ingredients_raw": "Thành phần: Bột mì, đường, mạch nha glucose, shortening thực vật (có chứa chất nhũ hóa (471)), chất béo thực vật (có chứa chất nhũ hóa (492, 322(i))), bột cacao (2,8%), sữa bột nguyên kem, trứng, chất tạo xốp (500(ii)), chất ổn định (1442, 415), muối, hỗn hợp bột cacao và bơ cacao (0,2%), chất ổn định (1442, 415), chất điều chỉnh độ acid (341(i)), hương liệu tổng hợp (vani), chất nhũ hóa (322(i)), (476), muối i-ốt, protein sữa.",
+  "ingredients": [
+    {
+      "name": "Bột mì",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": "Gluten"
+    },
+    {
+      "name": "Đường",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Mạch nha glucose",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Shortening thực vật",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "có chứa chất nhũ hóa (471)"
+    },
+    {
+      "name": "Chất béo thực vật",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "có chứa chất nhũ hóa (492, 322(i))"
+    },
+    {
+      "name": "Bột cacao",
+      "percentage": "2,8%",
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Sữa bột nguyên kem",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    },
+    {
+      "name": "Trứng",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    },
+    {
+      "name": "Chất tạo xốp",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(500(ii))"
+    },
+    {
+      "name": "Chất ổn định",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(1442, 415)"
+    },
+    {
+      "name": "Muối",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Hỗn hợp bột cacao và bơ cacao",
+      "percentage": "0,2%",
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Chất điều chỉnh độ acid",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(341(i))"
+    },
+    {
+      "name": "Hương liệu tổng hợp (vani)",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Chất nhũ hóa",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": "(322(i)), (476)"
+    },
+    {
+      "name": "Muối i-ốt",
+      "percentage": null,
+      "is_allergen": false,
+      "notes": null
+    },
+    {
+      "name": "Protein sữa",
+      "percentage": null,
+      "is_allergen": true,
+      "notes": null
+    }
+  ],
+  "nutrition_facts": {
+    "serving_size": "36,3 g",
+    "servings_per_container": "2",
+    "calories": "160 kcal",
+    "nutrients": [
+      {
+        "name": "Chất béo",
+        "amount": "6",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Natri",
+        "amount": "110",
+        "unit": "mg",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Carbohydrat",
+        "amount": "24",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Đường tổng số",
+        "amount": "12",
+        "unit": "g",
+        "daily_value_percent": null
+      },
+      {
+        "name": "Chất đạm",
+        "amount": "2",
+        "unit": "g",
+        "daily_value_percent": null
+      }
+    ]
+  },
+  "warnings": [
+    "có gluten",
+    "có trứng",
+    "có sữa",
+    "đường cao"
+  ]
+}

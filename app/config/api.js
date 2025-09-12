@@ -10,8 +10,16 @@ const getLocalIPAddress = () => {
     return 'localhost';
   } else if (Platform.OS === 'ios') {
     // Trên iOS, cần dùng IP thật của máy host
-    // Bạn cần thay đổi IP này thành IP thật của máy
-    return '192.168.1.100'; // Thay đổi thành IP thật của máy
+    // Các IP phổ biến - bạn có thể thay đổi theo IP thật của máy
+    const possibleIPs = [
+      '192.168.1.100',  // IP mặc định
+      '192.168.0.100',  // IP phổ biến khác
+      '10.0.0.100',     // IP mạng khác
+      '172.20.10.1',    // IP hotspot iPhone
+    ];
+    
+    // IP thật của máy bạn
+    return '192.168.0.118';
   } else if (Platform.OS === 'android') {
     // Trên Android Emulator, dùng 10.0.2.2
     return '10.0.2.2';
@@ -23,57 +31,42 @@ const getLocalIPAddress = () => {
 // API Configuration
 const API_CONFIG = {
   // Base URL for backend API - adjust based on platform
-  BASE_URL: `http://${getLocalIPAddress()}:5000/api`,
+  BASE_URL: `http://${getLocalIPAddress()}:8888`,
   
   // Export BASE_URL for direct use
-  API_BASE_URL: `http://${getLocalIPAddress()}:5000/api`,
+  API_BASE_URL: `http://${getLocalIPAddress()}:8888`,
   
   // Auth endpoints
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    FORGOT_PASSWORD: '/auth/forgot',
-    VERIFY_OTP: '/auth/verify-otp',
-    RESET_PASSWORD: '/auth/reset-password',
+    LOGIN: '/api/auth/login',
+    REGISTER: '/api/auth/register',
+    VERIFY: '/api/auth/verify',
+    LOGOUT: '/api/auth/logout',
+    CREATE_ADMIN: '/api/auth/create-admin',
   },
   
-  // Profile endpoints
-  PROFILE: {
-    GET: '/profile',
-    UPDATE: '/profile',
-    DELETE: '/profile',
+  // Health Profile endpoints
+  HEALTH_PROFILES: {
+    GET: '/api/health-profiles',
+    CREATE: '/api/health-profiles',
+    UPDATE: '/api/health-profiles',
+    SET_CURRENT: '/api/health-profiles',
   },
   
   // Image Analysis endpoints
   IMAGE_ANALYSIS: {
-    ANALYZE: '/image-analysis/analyze',
-    HISTORY: '/image-analysis/history',
-    DETAIL: '/image-analysis/detail',
-    DELETE: '/image-analysis/delete',
-    STATS: '/image-analysis/stats',
-    TRENDS: '/image-analysis/trends',
-    TOP_PRODUCTS: '/image-analysis/top-products',
-    EXPORT: '/image-analysis/export',
-  },
-  
-  // Scan endpoints
-  SCAN: {
-    UPLOAD: '/scan/upload',
-    ANALYZE: '/scan/analyze',
-  },
-  
-  // Search endpoints
-  SEARCH: {
-    PRODUCTS: '/search/products',
-    INGREDIENTS: '/search/ingredients',
+    ANALYZE: '/label/analyze',
+    ADVICE: '/advice',
+    DETAILED_ANALYSIS: '/detailed-analysis',
+    RECOMMEND: '/recommend',
+    CHAT: '/chat',
+    ASR: '/asr',
   },
   
   // Health check endpoints
   HEALTH: {
-    CHECK: '/health',
-    INFO: '/info',
-    DEBUG: '/debug',
-    TEST_UPLOAD: '/test-upload',
+    CHECK: '/api/health',
+    INFO: '/_health',
   }
 };
 
@@ -105,9 +98,13 @@ export const setAuthToken = async (token) => {
   }
 };
 
-export default API_CONFIG;
+// Export API_CONFIG as named export
+export { API_CONFIG };
 
 // Export API_BASE_URL for direct use
 export const API_BASE_URL = API_CONFIG.API_BASE_URL;
+
+// Also export as default for backward compatibility
+export default API_CONFIG;
 
 
